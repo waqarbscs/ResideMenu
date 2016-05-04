@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "449730795143",
+    "project_id": "umasstechnologies"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449730795143:android:44802b180f632db2",
+        "android_client_info": {
+          "package_name": "app.num.umasstechnologies"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDunj9wuJDg71J72dvQppb6yi15rWv-Tr8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
