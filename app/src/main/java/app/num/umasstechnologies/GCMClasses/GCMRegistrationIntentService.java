@@ -144,11 +144,6 @@ public class GCMRegistrationIntentService extends IntentService {
             wr.flush();
             wr.close();
 
-         //   OutputStream outputStream = httpURLConnection.getOutputStream();
-         //   outputStream.write(bytes);
-        //    outputStream.flush();
-        //    outputStream.close();
-
             //handling the response
             int requestCode = httpURLConnection.getResponseCode();
             if(requestCode != 200) {
