@@ -3,11 +3,13 @@
     package="app.num.umasstechnologies">
 
     <uses-permission android:name="com.example.googlemaps.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
-    <permission android:name="app.num.umasstechnologies.permission.C2D_MESSAGE" android:protectionLevel="signature"></permission>
+    <permission
+        android:name="app.num.umasstechnologies.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
     <uses-permission android:name="app.num.umasstechnologies.permission.C2D_MESSAGE" />
-
 
     <permission
         android:name="com.example.googlemaps.permission.MAPS_RECEIVE"
@@ -58,20 +60,27 @@
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Login"></activity>
-        
-        <receiver android:name="com.google.android.gms.gcm.GcmReceiver" android:exported="true" android:permission="com.google.android.c2dm.permission.SEND" >
+        <activity android:name=".Login" />
+
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
                 <category android:name="app.num.umasstechnologies" />
             </intent-filter>
         </receiver>
 
-        <service android:name=".GCMClasses.GCMPushRecieverService" android:exported="false">
+        <service
+            android:name=".GCMClasses.GCMPushRecieverService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
@@ -81,8 +90,12 @@
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
+        <service
+            android:name=".CustomServices.IntentLoginService"
+            android:exported="false" />
+        <service
+            android:name=".CustomServices.IntentGetTrackerService"
+            android:exported="false"></service>
     </application>
-
-
 
 </manifest>

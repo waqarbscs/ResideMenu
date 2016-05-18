@@ -9,6 +9,7 @@ import com.google.android.gms.maps.SupportMapFragment;
  */
 public class AppManager {
 
+    public static final String Hand_Shake = "M@ssu@e";
     private static AppManager ourInstance = new AppManager();
 
     public static AppManager getInstance() {

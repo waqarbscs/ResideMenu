@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public class Vehicle {
 
+    //this is basically the tracker i guess..
     public String name;
     public String description;
     public int Type;

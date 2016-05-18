@@ -36,4 +36,5 @@ dependencies {
     compile 'com.android.support:support-v4:23.3.0'
     compile 'com.specyci:residemenu:1.6'
     compile 'com.android.support:design:23.3.0'
+    compile 'io.realm:realm-android:0.84.1'
 }

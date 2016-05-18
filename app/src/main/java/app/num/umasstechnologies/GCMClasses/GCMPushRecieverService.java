@@ -26,6 +26,7 @@ public class GCMPushRecieverService extends GcmListenerService {
     }
 
     public void sendNotification(String message) {
+
         Intent intent = null;
         intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
