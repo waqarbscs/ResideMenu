@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.content.Context;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -22,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import app.num.umasstechnologies.Models.user;
 import app.num.umasstechnologies.Singleton.AppManager;
 
 /**
@@ -36,11 +40,9 @@ public class IntentLoginService extends IntentService {
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     public static final String BroadCastSuccess = "app.num.umasstechnologies.CustomServices.Success.login";
-    public static final String BroadCastError = "app.num.umasstechnologies.CustomServices.Fail.login";
+    public static final String BroadCastFail = "app.num.umasstechnologies.CustomServices.Fail.login";
+    public static final String BroadCastError = "app.num.umasstechnologies.CustomServices.Error.login";
 
-    // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "app.num.umasstechnologies.CustomServices.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "app.num.umasstechnologies.CustomServices.extra.PARAM2";
 
     private static final String Tag = "IntentLoginService";
 
@@ -63,25 +65,79 @@ public class IntentLoginService extends IntentService {
     }
 
 
-    public void LoginTheUser(String username, String password) {
+    public int LoginTheUser(String username, String password) {
 
         String link = "http://massuae.dyndns.org:8088/tracking_zone/mob_app_srvcs/login/index/"+ AppManager.Hand_Shake+"/"+username+"/"+password;
 
+        int codeStatus = -1; // 1 = Error
+        String errorMessage = "NA";
+
         try {
+            String result = getStringResultFromService_POST(link);
+            if(result == null) {
+                //the server didn't return anything..
+                codeStatus = 1;
+                errorMessage = "server retuned null.";
+                return codeStatus;
+            }
 
-            String result = getStringResultFromService_POST("http://onewindowsol.com/NimazTime/getMasjidDetail.php");
             Log.w("Response",result);
+            JSONObject jsonObject  = new JSONObject(result);
 
-            JSONObject jsonObject = new JSONObject(result);
+            if(jsonObject.has("user_data")) {
 
-            //add things to object.
-            //add object to database.
-            //send the broadcast, that you have updated the database.
+                String resData = jsonObject.get("user_data").toString();
 
-            Intent dataRecieve = new Intent(BroadCastSuccess);
-            dataRecieve.putExtra("Message","Updated Database.");
-            LocalBroadcastManager.getInstance(this).sendBroadcast(dataRecieve);
 
+                if(resData.equals("false")) {
+
+                    Intent failIntent = new Intent(BroadCastFail);
+                    LocalBroadcastManager.getInstance(IntentLoginService.this).sendBroadcast(failIntent);
+
+                }
+                else if (  jsonObject.has("company_info")) { //it will have atleast one company important
+
+                    //if it has company info mean its one company
+                    //else it will have company list
+                    //got the user ofcourse...
+
+                    String uData = jsonObject.get("user_data").toString();
+                    String ciData = jsonObject.get("company_info").toString();
+
+                    JSONArray userDataArray = new JSONArray(uData);
+                    JSONArray userCompInfoArray = new JSONArray(ciData);
+
+
+
+                    JSONObject userDataObject = new JSONObject( userDataArray.getString(0).toString() );
+                    JSONObject companyInforObject = new JSONObject( userCompInfoArray.getString(0).toString() );
+
+                    user foundUser =  new user();
+
+                    foundUser.setId( Integer.valueOf( userDataObject.get("id").toString() ) );
+                    foundUser.setUsername( userDataObject.get("name").toString() );
+                    foundUser.setType( Integer.valueOf( userDataObject.get("type").toString() ) );
+                    foundUser.setType( Integer.valueOf( userDataObject.get("ref_company").toString() ) );
+
+
+                    Intent successIntent = new Intent(BroadCastSuccess);
+                    LocalBroadcastManager.getInstance(IntentLoginService.this).sendBroadcast(successIntent);
+
+                }
+                else if (jsonObject.has("company_list")) {
+                    //we have multiple objects of that whatever
+                    JSONArray userDataArray = new JSONArray(jsonObject.get("user_data").toString());
+                    JSONArray userCompInfoArray = new JSONArray(jsonObject.get("company_list").toString());
+
+                    JSONObject userDataObject = new JSONObject(userDataArray.toString());
+                    JSONObject companyInforObject = new JSONObject(userCompInfoArray.toString());
+                }
+
+            }
+            else {
+                Intent errorIntent = new Intent(BroadCastError);
+                LocalBroadcastManager.getInstance(IntentLoginService.this).sendBroadcast(errorIntent);
+            }
 
         } catch (Exception ex) {
 
@@ -89,7 +145,14 @@ public class IntentLoginService extends IntentService {
             Intent dataRecieve = new Intent(BroadCastError);
             LocalBroadcastManager.getInstance(this).sendBroadcast(dataRecieve);
 
+            codeStatus = 1;
+            return codeStatus;
+
         }
+  //      catch (JSONException jex) {
+//        }
+
+        return codeStatus;
     }
 
 

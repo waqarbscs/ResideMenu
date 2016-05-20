@@ -8,16 +8,33 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@drawable/background"
+        android:background="#fff"
         android:fitsSystemWindows="true">
 
+
         <LinearLayout
+
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="56dp"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp">
+           >
+
+            <LinearLayout
+                android:background="@color/darkOrange"
+                android:layout_width="match_parent"
+                android:layout_height="40dp">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_marginTop="60dp"
+                android:paddingRight="30dp"
+                android:paddingLeft="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
 
             <ImageView android:src="@drawable/logo"
                 android:layout_width="wrap_content"
@@ -30,16 +47,9 @@
                 android:id="@+id/til_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textColorHint="@color/white"
-                android:layout_marginBottom="8dp">
+                android:layout_marginTop="8dp">
 
                 <EditText android:id="@+id/input_username"
-                    android:textColorHighlight="@color/white"
-                    android:textColor="@color/white"
-                    android:shadowColor="@color/black"
-                    android:textColorHint="@color/white"
-
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
@@ -51,23 +61,19 @@
                 android:id="@+id/til_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColorHint="@color/white"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp">
 
                 <EditText android:id="@+id/input_password"
-                    android:textColorHighlight="@color/white"
-                    android:textColor="@color/white"
-                    android:shadowColor="@color/black"
-                    android:textColorHint="@color/white"
-
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
                     android:hint="Password"/>
+
             </android.support.design.widget.TextInputLayout>
 
             <android.support.v7.widget.AppCompatButton
+
                 android:id="@+id/btn_login"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -83,6 +89,8 @@
                 android:text="No account yet? Create one"
                 android:gravity="center"
                 android:textSize="16dip"/>
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
