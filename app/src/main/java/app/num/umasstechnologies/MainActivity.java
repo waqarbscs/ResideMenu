@@ -37,11 +37,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private user currentUser = null;
 
-    /*
-     *
-     * Called when the activity is first created.
-     *
-     */
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

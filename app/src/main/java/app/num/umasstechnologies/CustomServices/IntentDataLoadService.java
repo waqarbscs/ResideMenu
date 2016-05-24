@@ -19,6 +19,7 @@ import java.net.URL;
 
 import app.num.umasstechnologies.DatabaseClasses.DatabaseHandler;
 import app.num.umasstechnologies.Models.CompanyInfo;
+import app.num.umasstechnologies.Models.Vehicle;
 import app.num.umasstechnologies.Models.user;
 import app.num.umasstechnologies.Singleton.AppManager;
 
@@ -32,9 +33,9 @@ import app.num.umasstechnologies.Singleton.AppManager;
 public class IntentDataLoadService extends IntentService {
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String Action_Success = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.Success";
-    private static final String Action_Fail = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.Fail";
-    private static final String Action_Error = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.Error";
+    public static final String Action_Success = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.Success";
+    public static final String Action_Fail = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.Fail";
+    public static final String Action_Error = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.Error";
 
     private static final String Tag = "IntentDataLoadService";
 
@@ -80,6 +81,26 @@ public class IntentDataLoadService extends IntentService {
                         JSONArray trackerslist = mainJson.getJSONArray("trackers");
 
                         //we need to add both of them into database .. but first decode them ..
+
+                        int memberslen = memberslist.length();
+                        int trackerlen = trackerslist.length();
+
+                        for (int index = 0; index < memberslen; index++) {
+
+                            JSONObject tempObject = memberslist.getJSONObject(index);
+
+                            String id = tempObject.getString("id");
+                            String username = tempObject.getString("user_name");
+                            tempObject.getString("name");
+
+
+                        }
+
+                        for (int index = 0; index < trackerlen; index++) {
+
+                        }
+
+
 
 
                         Log.w(Tag, "TrakcerMemberList: " + response);

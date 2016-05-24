@@ -61,6 +61,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         txtil_username.setHint("Username");
 
         mBroadCastReciever = new BroadcastReceiver() {
+
             @Override
             public void onReceive(Context context, Intent intent) {
 
@@ -99,10 +100,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         int numberOfCompanies = dbhan.countCompanys();
 
                         if(numberOfCompanies > 1) {
-                            CompanyDialog vDialog = new CompanyDialog();
-                            //we have to send the companies list of course..
 
+                            CompanyDialog vDialog = new CompanyDialog();
                             vDialog.showDialog(Login.this, dbhan.getArrayOfCompanies() );
+
                         }
                         else {
                             Intent intentMainScreen = new Intent(Login.this, MainActivity.class);

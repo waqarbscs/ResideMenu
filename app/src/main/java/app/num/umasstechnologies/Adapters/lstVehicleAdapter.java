@@ -1,10 +1,12 @@
 package app.num.umasstechnologies.Adapters;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -64,8 +66,10 @@ public class lstVehicleAdapter extends BaseAdapter {
         if(convertView == null)
             convertView = inflater.inflate(R.layout.lyt_vehicle_row,null,false);
 
-        ((TextView) convertView.findViewById(R.id.txtvName)).setText(vehicleList.get(position).name);
-        ((TextView) convertView.findViewById(R.id.txtvDescription)).setText(vehicleList.get(position).description);
+        ((TextView) convertView.findViewById(R.id.txtvTrackerName)).setText(vehicleList.get(position).trackerName);
+        ((TextView) convertView.findViewById(R.id.txtvDeviceId)).setText(vehicleList.get(position).deviceid);
+
+        ((ImageView) convertView.findViewById(R.id.imvEngineStatus)).setBackgroundColor((vehicleList.get(position).trackerGenColor.equals(0)? Color.RED:Color.GREEN));
 
         return convertView;
     }

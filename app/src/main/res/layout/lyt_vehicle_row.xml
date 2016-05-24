@@ -19,7 +19,7 @@
             <ImageView
                 android:layout_alignParentLeft="true"
                 android:src="@drawable/common_plus_signin_btn_icon_dark_focused"
-                android:layout_height="40dp"
+                android:layout_height="50dp"
                 android:layout_width="40dp" />
 
         </RelativeLayout>
@@ -72,14 +72,25 @@
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:layout_marginLeft="20dp"
                 android:layout_below="@+id/trackerName"
-                android:layout_toRightOf="@+id/deviceid"
-                android:id="@+id/txtvDeviceId"
+                android:layout_toLeftOf="@+id/imvEngineStatus"
+                android:id="@+id/engineStatus"
+                android:textStyle="bold"
                 android:padding="3dp"
                 android:textColor="@color/black"
-                android:text="938923."
+                android:text="Engine Status: "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
+            <ImageView
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/txtvTrackerName"
+                android:id="@+id/imvEngineStatus"
+                android:background="@color/darkOrange"
+                android:layout_width="15dp"
+                android:layout_height="15dp" />
 
 
 
