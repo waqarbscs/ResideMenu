@@ -1,9 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:weightSum="1.0"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_margin="5dp"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <Spinner
+            android:id="@+id/spn_member_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </Spinner>
+
+
+    </LinearLayout>
+
+
     <ListView
+        android:layout_marginTop="40dp"
         android:id="@+id/lstViewVehicles"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

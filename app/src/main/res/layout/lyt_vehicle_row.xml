@@ -11,36 +11,79 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:src="@drawable/common_plus_signin_btn_icon_dark_focused"
+        <RelativeLayout
             android:layout_weight="0.2"
-            android:layout_height="50dp"
-            android:layout_width="0dp"/>
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
 
-        <LinearLayout
+            <ImageView
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/common_plus_signin_btn_icon_dark_focused"
+                android:layout_height="40dp"
+                android:layout_width="40dp" />
+
+        </RelativeLayout>
+
+
+
+        <RelativeLayout
             android:orientation="vertical"
             android:layout_weight="0.8"
             android:layout_width="0dp"
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/txtvName"
+                android:id="@+id/trackerName"
                 android:textStyle="bold"
                 android:padding="3dp"
                 android:textColor="@color/black"
-                android:text="Car"
-                android:layout_width="match_parent"
+                android:text="Tracker Name: "
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/txtvDescription"
+                android:layout_toRightOf="@+id/trackerName"
+                android:id="@+id/txtvTrackerName"
                 android:padding="3dp"
                 android:textColor="@color/black"
-                android:text="This is cars description."
-                android:layout_width="match_parent"
+                android:text="This and that."
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-        </LinearLayout>
+
+            <TextView
+                android:layout_below="@+id/trackerName"
+                android:id="@+id/deviceid"
+                android:textStyle="bold"
+                android:padding="3dp"
+                android:textColor="@color/black"
+                android:text="Device Id: "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_below="@+id/trackerName"
+                android:layout_toRightOf="@+id/deviceid"
+                android:id="@+id/txtvDeviceId"
+                android:padding="3dp"
+                android:textColor="@color/black"
+                android:text="938923."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_below="@+id/trackerName"
+                android:layout_toRightOf="@+id/deviceid"
+                android:id="@+id/txtvDeviceId"
+                android:padding="3dp"
+                android:textColor="@color/black"
+                android:text="938923."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+
+        </RelativeLayout>
 
 
     </LinearLayout>

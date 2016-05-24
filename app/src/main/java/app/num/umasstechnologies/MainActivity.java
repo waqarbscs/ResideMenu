@@ -18,7 +18,9 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.special.ResideMenu.ResideMenu;
 import com.special.ResideMenu.ResideMenuItem;
 
+import app.num.umasstechnologies.DatabaseClasses.DatabaseHandler;
 import app.num.umasstechnologies.GCMClasses.GCMRegistrationIntentService;
+import app.num.umasstechnologies.Models.user;
 import app.num.umasstechnologies.Singleton.AppManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -28,23 +30,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ResideMenu resideMenu;
     private Context mContext;
 
-    private ResideMenuItem itemHome;
     private ResideMenuItem itemVehicles;
     private ResideMenuItem itemFeedback;
     private ResideMenuItem itemAlerts;
+    private ResideMenuItem itemLogout;
+
+    private user currentUser = null;
 
     /*
+     *
      * Called when the activity is first created.
+     *
      */
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         AppManager.getInstance().setCurrentActivity(this);
 
         mContext = this;
+
+        DatabaseHandler dbhandler = new DatabaseHandler(MainActivity.this);
+
+        currentUser = dbhandler.getUser();
 
         mRegistrationBroadcastReciever = new BroadcastReceiver() {
             @Override
@@ -78,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setUpMenu();
         if( savedInstanceState == null )
-            changeFragment(new HomeFragment());
+            changeFragment(new VehichleFragment());
     }
 
     private void setUpMenu() {
@@ -94,21 +105,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         resideMenu.setShadowVisible(false); //we dont want shadow
         resideMenu.setSwipeDirectionDisable(ResideMenu.DIRECTION_RIGHT); //we dont want it to work with right blah blah
 
-        // create menu items;
-        itemHome     = new ResideMenuItem(this, R.drawable.icon_home,     "Home");
+
         itemVehicles  = new ResideMenuItem(this, R.drawable.icon_profile,  "Vehicles");
         itemAlerts = new ResideMenuItem(this, R.drawable.icon_calendar, "Alerts");
         itemFeedback = new ResideMenuItem(this, R.drawable.icon_settings, "Feedback");
+        itemLogout = new ResideMenuItem(this,R.drawable.icon_home, "Logout");
 
-        itemHome.setOnClickListener(this);
+
+        //get data from shared preference
+
+
+
+
+
+      //  itemHome.setOnClickListener(this);
         itemVehicles.setOnClickListener(this);
         itemAlerts.setOnClickListener(this);
         itemFeedback.setOnClickListener(this);
+        itemLogout.setOnClickListener(this);
 
-        resideMenu.addMenuItem(itemHome, ResideMenu.DIRECTION_LEFT);
+      //  resideMenu.addMenuItem(itemHome, ResideMenu.DIRECTION_LEFT);
         resideMenu.addMenuItem(itemVehicles, ResideMenu.DIRECTION_LEFT);
         resideMenu.addMenuItem(itemAlerts, ResideMenu.DIRECTION_LEFT);
         resideMenu.addMenuItem(itemFeedback, ResideMenu.DIRECTION_LEFT);
+        resideMenu.addMenuItem(itemLogout, ResideMenu.DIRECTION_LEFT);
 
         // You can disable a direction by setting ->
         // resideMenu.setSwipeDirectionDisable(ResideMenu.DIRECTION_RIGHT);
@@ -146,14 +166,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
 
-        if (view == itemHome){
-            changeFragment(new HomeFragment());
-        }else if (view == itemAlerts){
+       // if (view == itemHome){
+       //     changeFragment(new HomeFragment());
+       // }else
+
+        if (view == itemAlerts){
             changeFragment(new AlertFragment());
         }else if (view == itemVehicles){
             changeFragment(new VehichleFragment());
         }else if (view == itemFeedback){
             changeFragment(new SettingsFragment());
+        }
+        else if (view == itemLogout) {
+            //here we will logut.. so delete things from database..
+            DatabaseHandler dbhandler = new DatabaseHandler(MainActivity.this);
+            dbhandler.deleteAllInformation();
+            Intent intentLoginScreen = new Intent(MainActivity.this,Login.class);
+
+            AppManager.getInstance().removeCompany();
+
+            finish();
+            startActivity(intentLoginScreen);
+
         }
 
         resideMenu.closeMenu();
@@ -178,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .replace(R.id.main_fragment, targetFragment, "fragment")
                 .setCustomAnimations(R.anim.fragment_slide_left_enter, R.anim.fragment_slide_left_exit)
                 .commit();
+
     }
 
     // What good method is to access resideMenu？

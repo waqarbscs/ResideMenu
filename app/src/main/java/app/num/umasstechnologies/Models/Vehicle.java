@@ -7,20 +7,24 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public class Vehicle {
 
-    //this is basically the tracker i guess..
-    public String name;
-    public String description;
-    public int Type;
-    public LatLng position;
-    public String address;
-    public String owner;
-    public boolean CheckEngineLightStatus;
-    public boolean EngineStatus;
+    public String id;
+    public String deviceid;
+    public String trackerName;
+    public String trackerGenStatus;
+    public String trackerGenColor;
+    public String last_move;
+    public String last_status;
+    public String last_gprs;
+    public String engineStatus;
 
-    public Vehicle () {}
-    public Vehicle(String pName, String pDescription) {
-        name= pName;
-        description = pDescription;
+    public Vehicle(String pDeviceId, String pTrackerName, String pEngineStatus, String pTrackerColor) {
+
+        deviceid = pDeviceId;
+        trackerName = pTrackerName;
+        engineStatus = pEngineStatus;
+        trackerGenColor = pTrackerColor;
+
     }
+
 
 }

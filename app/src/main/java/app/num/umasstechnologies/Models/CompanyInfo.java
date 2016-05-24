@@ -1,6 +1,6 @@
 package app.num.umasstechnologies.Models;
 
-import io.realm.RealmObject;
+
 
 /**
  * Created by Imdad on 5/17/2016.

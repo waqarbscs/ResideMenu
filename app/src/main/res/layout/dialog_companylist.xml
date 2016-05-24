@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:background="@color/darkOrange"
+        android:layout_width="match_parent"
+        android:layout_height="80dp">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="160dp">
+
+        <TextView
+            android:layout_margin="5dp"
+            android:textColor="@color/black"
+            android:text="Select Company:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Spinner
+            android:layout_margin="5dp"
+            android:padding="5dp"
+            android:id="@+id/spn_companylist"
+            android:layout_width="wrap_content"
+            android:popupTheme="@android:style/ThemeOverlay.Material.Light"
+            android:layout_height="wrap_content"></Spinner>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_select"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentRight="true"
+                android:text="Select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

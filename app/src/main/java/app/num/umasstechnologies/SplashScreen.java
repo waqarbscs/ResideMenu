@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import app.num.umasstechnologies.DatabaseClasses.DatabaseHandler;
+import app.num.umasstechnologies.Models.user;
+
 public class SplashScreen extends AppCompatActivity {
 
     public static final int SPLASH_DISPLAY_LENGTH = 3000;
@@ -26,10 +29,24 @@ public class SplashScreen extends AppCompatActivity {
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
-                /* Create an Intent that will start the Menu-Activity. */
-                Intent mainIntent = new Intent(SplashScreen.this,Login.class);
-                SplashScreen.this.startActivity(mainIntent);
-                SplashScreen.this.finish();
+
+                DatabaseHandler dbhandler = new DatabaseHandler(SplashScreen.this);
+                user currentUser = dbhandler.getUser();
+
+                if(currentUser == null) {
+
+                    /* Create an Intent that will start the Menu-Activity. */
+                    Intent mainIntent = new Intent(SplashScreen.this, Login.class);
+                    SplashScreen.this.startActivity(mainIntent);
+                    SplashScreen.this.finish();
+                }
+                else {
+
+                    /* Create an Intent that will start the Menu-Activity. */
+                    Intent mainIntent = new Intent(SplashScreen.this, MainActivity.class);
+                    SplashScreen.this.startActivity(mainIntent);
+                    SplashScreen.this.finish();
+                }
 
                 overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
             }

@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="7dp"
-                android:text="RESideMenu DEMO"
+                android:text="Reside"
                 android:textSize="24sp"
                 android:textColor="#fff"
                 android:layout_gravity="center"/>
@@ -53,6 +53,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:id="@+id/main_fragment">
+
     </FrameLayout>
 
 </LinearLayout>

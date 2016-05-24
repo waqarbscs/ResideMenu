@@ -21,10 +21,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import app.num.umasstechnologies.DatabaseClasses.DatabaseHandler;
+import app.num.umasstechnologies.Models.CompanyInfo;
 import app.num.umasstechnologies.Models.user;
 import app.num.umasstechnologies.Singleton.AppManager;
 
@@ -57,6 +61,8 @@ public class IntentLoginService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
 
+
+
             String username = intent.getStringExtra("username");
             String password = intent.getStringExtra("password");
             LoginTheUser(username,password);
@@ -81,7 +87,11 @@ public class IntentLoginService extends IntentService {
                 return codeStatus;
             }
 
+            result = result.replace("<br>", " ");
+
             Log.w("Response",result);
+
+
             JSONObject jsonObject  = new JSONObject(result);
 
             if(jsonObject.has("user_data")) {
@@ -117,20 +127,71 @@ public class IntentLoginService extends IntentService {
                     foundUser.setId( Integer.valueOf( userDataObject.get("id").toString() ) );
                     foundUser.setUsername( userDataObject.get("name").toString() );
                     foundUser.setType( Integer.valueOf( userDataObject.get("type").toString() ) );
-                    foundUser.setType( Integer.valueOf( userDataObject.get("ref_company").toString() ) );
+                    foundUser.setReference( Integer.valueOf( userDataObject.get("ref_company").toString() ) );
+
+                    CompanyInfo cInformation = new CompanyInfo();
+                    cInformation.setName(companyInforObject.getString("name"));
+                    cInformation.setId(Integer.valueOf(companyInforObject.getString("id")));
+                    cInformation.setLogo(companyInforObject.getString("logo"));
 
 
+                    //first we need to remove all the data of old user .. and than we need to add data
+                    //for new user..
+
+                    DatabaseHandler dbhandler = new DatabaseHandler(getApplicationContext());
+
+                    dbhandler.addUser(foundUser); //this will also set user type so we know the stuff..
+                    dbhandler.addCompanyInfo(cInformation); //this shall insert company information..
+
+                    //adding information in database...
+
+                    //we also have to delte information on logout.. :O..
+
+                    //chalo bhai database mein fields daldi..
+                    AppManager.getInstance().setCompanyInPreferences(cInformation);
                     Intent successIntent = new Intent(BroadCastSuccess);
                     LocalBroadcastManager.getInstance(IntentLoginService.this).sendBroadcast(successIntent);
 
                 }
                 else if (jsonObject.has("company_list")) {
-                    //we have multiple objects of that whatever
-                    JSONArray userDataArray = new JSONArray(jsonObject.get("user_data").toString());
-                    JSONArray userCompInfoArray = new JSONArray(jsonObject.get("company_list").toString());
 
-                    JSONObject userDataObject = new JSONObject(userDataArray.toString());
-                    JSONObject companyInforObject = new JSONObject(userCompInfoArray.toString());
+                    //we have multiple objects of that whatever
+                    String uData = jsonObject.get("user_data").toString();
+                    String ciData = jsonObject.get("company_list").toString();
+
+                    JSONArray userDataArray = new JSONArray(uData);
+                    JSONArray userCompInfoArray = jsonObject.getJSONArray("company_list");
+
+                    JSONObject userDataObject = new JSONObject( userDataArray.getString(0).toString() );
+
+                    user foundUser =  new user();
+
+                    foundUser.setId( Integer.valueOf( userDataObject.get("id").toString() ) );
+                    foundUser.setUsername( userDataObject.get("name").toString() );
+                    foundUser.setType( Integer.valueOf( userDataObject.get("type").toString() ) );
+                    foundUser.setReference( Integer.valueOf( userDataObject.get("ref_company").toString() ) );
+
+                    int len = userCompInfoArray.length();
+
+                    DatabaseHandler dbhandler = new DatabaseHandler(getApplicationContext());
+
+                    dbhandler.addUser(foundUser); //this will also set user type so we know the stuff..
+
+                    List<CompanyInfo> cInformationList = new ArrayList<>();
+
+                    for(int index = 0; index < len; index++) {
+                        JSONObject tempObject = userCompInfoArray.getJSONObject(index);
+                        CompanyInfo cInformation = new CompanyInfo();
+                        cInformation.setName(tempObject.getString("name"));
+                        cInformation.setId(Integer.valueOf(tempObject.getString("id")));
+                       // cInformation.setLogo(tempObject.getString("logo"));
+                        cInformationList.add(cInformation);
+                        dbhandler.addCompanyInfo(cInformation); //this shall insert company information..
+                    }
+
+                    //chalo bhai database mein fields daldi..
+                    Intent successIntent = new Intent(BroadCastSuccess);
+                    LocalBroadcastManager.getInstance(IntentLoginService.this).sendBroadcast(successIntent);
                 }
 
             }

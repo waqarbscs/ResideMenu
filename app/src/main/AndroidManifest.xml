@@ -95,6 +95,9 @@
             android:exported="false" />
         <service
             android:name=".CustomServices.IntentGetTrackerService"
+            android:exported="false" />
+        <service
+            android:name=".CustomServices.IntentDataLoadService"
             android:exported="false"></service>
     </application>
 

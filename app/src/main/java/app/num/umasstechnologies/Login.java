@@ -18,8 +18,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.List;
+
+import app.num.umasstechnologies.CustomDialogs.CompanyDialog;
 import app.num.umasstechnologies.CustomDialogs.ViewDialog;
 import app.num.umasstechnologies.CustomServices.IntentLoginService;
+import app.num.umasstechnologies.DatabaseClasses.DatabaseHandler;
+import app.num.umasstechnologies.Models.CompanyInfo;
+import app.num.umasstechnologies.Models.user;
+import app.num.umasstechnologies.Singleton.AppManager;
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
 
@@ -40,6 +47,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        AppManager.getInstance().setCurrentActivity(this);
 
         btn_login = (AppCompatButton) findViewById(R.id.btn_login);
         txtil_password = (TextInputLayout) findViewById(R.id.til_password);
@@ -66,11 +75,41 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 else if(intent.getAction().endsWith(IntentLoginService.BroadCastSuccess)) {
                     //here we have logged in
                     //we have to findout which type of login we have done for now..
+                    //if login was success full we need to move move move to next page
 
-                    Toast.makeText(Login.this,"Logged in success",Toast.LENGTH_SHORT).show();
-                    ViewDialog vDialog = new ViewDialog();
-                    vDialog.showDialog(Login.this, "Login Was Successfull.");
+                    //here we will check the user type first
+                    //if he is the admin and has more than one those than we will show him activity
+                    //filled with possible selected blah blah
+                    DatabaseHandler dbhandler = new DatabaseHandler(Login.this);
 
+                    user currentUser = dbhandler.getUser();
+
+
+                    if(currentUser == null) {
+                        Toast.makeText(Login.this,"Could not load user from database.",Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+
+
+                        //here we have to check.. that we have only one or many companies.. :p...
+
+
+                        DatabaseHandler dbhan = new DatabaseHandler(Login.this);
+
+                        int numberOfCompanies = dbhan.countCompanys();
+
+                        if(numberOfCompanies > 1) {
+                            CompanyDialog vDialog = new CompanyDialog();
+                            //we have to send the companies list of course..
+
+                            vDialog.showDialog(Login.this, dbhan.getArrayOfCompanies() );
+                        }
+                        else {
+                            Intent intentMainScreen = new Intent(Login.this, MainActivity.class);
+                            startActivity(intentMainScreen);
+                        }
+
+                    }
                 }
                 else if(intent.getAction().endsWith(IntentLoginService.BroadCastFail)) {
 
@@ -79,7 +118,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     vDialog.showDialog(Login.this, "Wrong Username/Password");
                 }
 
-                progressDialog.hide(); //close the progress dialog..
+                if(progressDialog != null)
+                    progressDialog.hide(); //close the progress dialog..
 
             }
         };
@@ -109,6 +149,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+
             case R.id.btn_login:
 
                 if(progressDialog == null) {
@@ -116,7 +157,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 }
 
                 progressDialog.setMessage("logging in.");
+                progressDialog.setCanceledOnTouchOutside(false);
+                progressDialog.setCancelable(false);
                 progressDialog.show();
+
+                if(AppManager.getInstance().isMyServiceRunning(IntentLoginService.class)) {
+                    return; //don't start it again..
+                }
 
                 if(edt_username.getText().toString().equals("")) {
                     txtil_username.setError("Please Enter Username.");
