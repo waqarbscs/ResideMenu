@@ -69,7 +69,10 @@ public class lstVehicleAdapter extends BaseAdapter {
         ((TextView) convertView.findViewById(R.id.txtvTrackerName)).setText(vehicleList.get(position).trackerName);
         ((TextView) convertView.findViewById(R.id.txtvDeviceId)).setText(vehicleList.get(position).deviceid);
 
-        ((ImageView) convertView.findViewById(R.id.imvEngineStatus)).setBackgroundColor((vehicleList.get(position).trackerGenColor.equals(0)? Color.RED:Color.GREEN));
+        ((TextView) convertView.findViewById(R.id.trackerid)).setText(vehicleList.get(position).id);
+
+        ((ImageView) convertView.findViewById(R.id.imvEngineStatus)).setBackgroundColor((vehicleList.get(position).engineStatus.equals("0")? Color.RED:Color.GREEN));
+        ((ImageView) convertView.findViewById(R.id.imv_iconcolor)).setBackgroundColor( Color.parseColor (vehicleList.get(position).trackerGenColor));
 
         return convertView;
     }

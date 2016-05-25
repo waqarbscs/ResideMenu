@@ -11,14 +11,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import app.num.umasstechnologies.DatabaseClasses.DatabaseHandler;
 import app.num.umasstechnologies.Models.CompanyInfo;
+import app.num.umasstechnologies.Models.Members;
 import app.num.umasstechnologies.Models.Vehicle;
 import app.num.umasstechnologies.Models.user;
 import app.num.umasstechnologies.Singleton.AppManager;
@@ -36,6 +42,8 @@ public class IntentDataLoadService extends IntentService {
     public static final String Action_Success = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.Success";
     public static final String Action_Fail = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.Fail";
     public static final String Action_Error = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.Error";
+    public static final String Action_TrackerInfo = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.TrackerInfo";
+
 
     private static final String Tag = "IntentDataLoadService";
 
@@ -50,7 +58,53 @@ public class IntentDataLoadService extends IntentService {
         try {
             if (intent != null) {
                 String action = intent.getStringExtra("action");
-                if (action.equals("getTracker")) {
+
+                if (action.equals("getTrackerInfo")){
+
+                    String trackerId = intent.getStringExtra("tracker_id");
+                    String link = "http://massuae.dyndns.org:8088/tracking_zone/mob_app_srvcs/track/get_tracker_info/" + AppManager.Hand_Shake + "/" +trackerId;
+                    String response = getStringResultFromService_POSTForTrackers(link);
+
+                    if( (new JSONObject(response)).getString("tracker_info").toString().equals("false") ){
+                        Intent intentEStatus = new Intent(Action_TrackerInfo);
+                        intentEStatus.putExtra("engine_status", "-1");
+                        intentEStatus.putExtra("tracker_id",trackerId);
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentEStatus);
+                    }
+                    else {
+
+                        String engineStatus = (new JSONObject(response)).getJSONArray("tracker_info").getJSONObject(0).getString("engine_status");
+
+                        Intent intentEStatus = new Intent(Action_TrackerInfo);
+
+                        intentEStatus.putExtra("engine_status", engineStatus);
+                        intentEStatus.putExtra("tracker_id",trackerId);
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentEStatus);
+                    }
+                }
+                else if (action.equals("sendfeedback")) {
+
+                    String name = intent.getStringExtra("name");
+                    String email =  intent.getStringExtra("email");
+                    String contact = intent.getStringExtra("contact");
+                    String comment = intent.getStringExtra("comment");
+
+                    String url = "http://massuae.dyndns.org:8088/tracking_zone/mob_app_srvcs/track/feedback/";
+
+                    Map params = new HashMap();
+                    params.put("hand_shake",AppManager.Hand_Shake);
+                    params.put("Name",name);
+                    params.put("contact_no", contact);
+                    params.put("email",email);
+                    params.put("comment",comment);
+                    params.put("username","admin");
+                    params.put("password","M@ss@dmin");
+
+                    String result = getStringResultFromService_POSTVariables(url,params);
+                    Log.w("Result",result);
+
+                }
+                else if (action.equals("getTracker")) {
                     //we need to load the bluddy trackers..
 
                     String memberId = intent.getStringExtra("memberid");
@@ -76,32 +130,55 @@ public class IntentDataLoadService extends IntentService {
                         String link = "http://massuae.dyndns.org:8088/tracking_zone/mob_app_srvcs/track/index/" + AppManager.Hand_Shake + "/" + currentUser.getId() + "/" + currentUser.getReference() + "/" + selectedComp + "/" + currentUser.gettype() + "/" + memberId;
                         String response = getStringResultFromService_POSTForTrackers(link);
 
+
+                        DatabaseHandler db = new DatabaseHandler(AppManager.getInstance().getCurrentActivity());
                         JSONObject mainJson = new JSONObject(response);
                         JSONArray memberslist =  mainJson.getJSONArray("members");
-                        JSONArray trackerslist = mainJson.getJSONArray("trackers");
 
+
+                        dbhandler.deleteTable(DatabaseHandler.TABLE_MEMBER);
+                        dbhandler.deleteTable(DatabaseHandler.TABLE_TRACKER);
+
+
+                        if(mainJson.getString("trackers").toString().equals("false")) {
+
+                        }
+                        else {
+                            JSONArray trackerslist = mainJson.getJSONArray("trackers");
+                            int trackerlen = trackerslist.length();
+
+                            for (int index = 0; index < trackerlen; index++) {
+
+                                JSONObject tempObject = trackerslist.getJSONObject(index);
+                                Vehicle vehicle = new Vehicle();
+
+                                vehicle.id = tempObject.getString("id");
+                                vehicle.deviceid = tempObject.getString("device_id");
+                                vehicle.trackerGenColor = tempObject.getString("tracker_general_color");
+                                vehicle.trackerName = tempObject.getString("tracker_name");
+                                vehicle.engineStatus = tempObject.getString("engine_status");
+
+                                db.addTracker(vehicle);
+                            }
+                        }
                         //we need to add both of them into database .. but first decode them ..
 
                         int memberslen = memberslist.length();
-                        int trackerlen = trackerslist.length();
+
+
 
                         for (int index = 0; index < memberslen; index++) {
 
                             JSONObject tempObject = memberslist.getJSONObject(index);
+                            Members members = new Members();
 
-                            String id = tempObject.getString("id");
-                            String username = tempObject.getString("user_name");
-                            tempObject.getString("name");
+                            members.id = tempObject.getString("id");
+                            members.username = tempObject.getString("user_name");
+                            members.name = tempObject.getString("name");
 
-
-                        }
-
-                        for (int index = 0; index < trackerlen; index++) {
+                            db.addMember(members);
 
                         }
-
-
-
 
                         Log.w(Tag, "TrakcerMemberList: " + response);
 
@@ -109,6 +186,9 @@ public class IntentDataLoadService extends IntentService {
                         //we have to add members in members table..
                         //and we have to add trackers in trackers table
                         //after emptying both of the tables.. keeping only needed data..
+
+                        Intent errorbroadcast = new Intent(Action_Success);
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(errorbroadcast);
 
                     }
 
@@ -125,7 +205,14 @@ public class IntentDataLoadService extends IntentService {
             }
         }
         catch (JSONException jE) {
-
+            Intent errorbroadcast = new Intent(Action_Error);
+            errorbroadcast.putExtra("message",jE.getMessage());
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(errorbroadcast);
+        }
+        catch (Exception ex) {
+            Intent errorbroadcast = new Intent(Action_Error);
+            errorbroadcast.putExtra("message",ex.getMessage());
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(errorbroadcast);
         }
     }
 
@@ -182,6 +269,82 @@ public class IntentDataLoadService extends IntentService {
 
     }
 
+    public String getStringResultFromService_POSTVariables(String serviceURL, Map<String,String> params) {
+
+        String resultString = null;
+        HttpURLConnection httpURLConnection = null;
+        String line = null;
+        URL url = null;
+
+
+        Log.w("URL",serviceURL);
+
+        try {
+            url = new URL(serviceURL);
+        }catch (MalformedURLException urlException) {
+            throw new IllegalArgumentException("URL: "+serviceURL);
+        }
+
+        StringBuilder bodyBuilder = new StringBuilder();
+        Iterator<Map.Entry<String,String>> iterator = params.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<String,String> param = iterator.next();
+            bodyBuilder.append(param.getKey()).append("=").append( URLEncoder.encode( String.valueOf( param.getValue()) ) );
+
+            if(iterator.hasNext()){
+                bodyBuilder.append("&");
+            }
+        }
+
+        String body = bodyBuilder.toString();
+        Log.w("BodyString","BodyString: "+body);
+        byte[] bytes = body.getBytes();
+
+        try {
+            Log.w("BodyString","url connection opening");
+            httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.setDoInput(true);
+
+            httpURLConnection.setFixedLengthStreamingMode(bytes.length);
+
+            httpURLConnection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+            httpURLConnection.setUseCaches(false);
+            httpURLConnection.setRequestMethod("POST");
+
+            DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
+            wr.writeBytes(body);
+            wr.flush();
+            wr.close();
+
+            //handling the response
+            int requestCode = httpURLConnection.getResponseCode();
+            if(requestCode != 200) {
+                throw  new IOException("PostFailed: StatusCode="+requestCode);
+            }
+
+            Log.w(Tag,"Request Code: "+requestCode);
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()) );
+
+            StringBuilder buffBuilder = new StringBuilder();
+
+            while ((line = bufferedReader.readLine())!= null) {
+                buffBuilder.append(line+"\n");
+            }
+
+            Log.w(Tag,"BuffBuilder: "+buffBuilder.toString());
+
+            return buffBuilder.toString();
+        }
+        catch (Exception ex) {
+            Log.w("BodyString","Excption: "+ex.getMessage());
+            ex.printStackTrace();
+            return  null;
+        }
+
+    }
 
 
 }

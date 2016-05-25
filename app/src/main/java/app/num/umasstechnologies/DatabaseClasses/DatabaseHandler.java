@@ -21,13 +21,13 @@ import app.num.umasstechnologies.Models.user;
  */
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
     private static final String DB_NAME = "masstech_dataholder";
 
-    private static final String TABLE_USER = "tbl_user";
-    private static final String TABLE_COMPANY = "tbl_company";
-    private static final String TABLE_MEMBER = "tbl_member";
-    private static final String TABLE_TRACKER = "tbl_tracker";
+    public static final String TABLE_USER = "tbl_user";
+    public static final String TABLE_COMPANY = "tbl_company";
+    public static final String TABLE_MEMBER = "tbl_member";
+    public static final String TABLE_TRACKER = "tbl_tracker";
 
     private static final String tbluser_USERNAME = "username";
     private static final String tbluser_PASSWORD = "upassword";
@@ -254,7 +254,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int index = 0;
 
         while (index < len) {
-
+            cursor.moveToPosition(index);
             Members tempM = new Members();
             tempM.username = cursor.getString(0);
             tempM.name = cursor.getString(1);
@@ -329,6 +329,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("delete from "+TABLE_MEMBER);
         db.execSQL("delete from "+TABLE_TRACKER);
 
+        db.close();
+    }
+
+    public void deleteTable(String pDeletableTable) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from "+pDeletableTable);
         db.close();
     }
 
