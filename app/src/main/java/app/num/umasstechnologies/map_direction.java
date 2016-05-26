@@ -54,13 +54,14 @@ public class map_direction extends AppCompatActivity {
 
         //lets start the service for the first time to get the gps data for the on engine thing blah blah
         Intent intentLoadLocation = new Intent(this, TrackerLocationLoadService.class);
+        intentLoadLocation.putExtra("action","getlocation");
+
+
         intentLoadLocation.putExtra("tracker_id",tracker_id);
-        this.startService(intentLoadLocation);
+        startService(intentLoadLocation);
 
         //region broadcast reciever..
         mBroadCastReciever = new BroadcastReceiver() {
-
-
 
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -122,7 +123,9 @@ public class map_direction extends AppCompatActivity {
 
         super.onResume();
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadCastReciever, new IntentFilter(TrackerLocationLoadService));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadCastReciever, new IntentFilter(TrackerLocationLoadService.ACTION_Error));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadCastReciever, new IntentFilter(TrackerLocationLoadService.ACTION_Fail));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadCastReciever, new IntentFilter(TrackerLocationLoadService.ACTION_Success));
 
     }
 

@@ -290,7 +290,7 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
 
         Intent intentTrackerInfo = new Intent(AppManager.getInstance().getCurrentActivity(),IntentDataLoadService.class);
         intentTrackerInfo.putExtra("action","getTrackerInfo");
-        intentTrackerInfo.putExtra("tracker_id",trackerid);
+        intentTrackerInfo.putExtra("tracker_id","282");
         AppManager.getInstance().getCurrentActivity().startService(intentTrackerInfo);
 
     }
