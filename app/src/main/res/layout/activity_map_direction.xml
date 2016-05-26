@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="app.num.umasstechnologies.map_direction">
 
     <fragment
@@ -10,5 +11,18 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_showdetail"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        app:rippleColor="@color/white"
+        android:padding="0dp"
+        app:useCompatPadding="false"
+        android:src="@drawable/view_details"
+        app:fabSize="normal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

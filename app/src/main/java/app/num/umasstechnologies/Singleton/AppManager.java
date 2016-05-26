@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
 import app.num.umasstechnologies.Models.CompanyInfo;
@@ -56,6 +57,36 @@ public class AppManager {
         CompanyInfo mCompanies = gson.fromJson(json, CompanyInfo.class);
 
         return mCompanies;
+    }
+
+    public LatLng getTheLatitudeLongitude(String data_latitude, String data_latitude_n_s, String data_longitude, String data_longitude_e_w) {
+
+        Double twoOfLat = Double.parseDouble( data_latitude.substring(0,2) );
+        Double remOfLat = Double.parseDouble( data_latitude.substring(2) );
+
+        Double threeDataLon = Double.parseDouble( data_longitude.substring(0,3) );
+        Double remOfLon = Double.parseDouble( data_longitude.substring(3) );
+
+        Double tracker_latitude = 0.0;
+        Double tracker_longitude = 0.0;
+
+
+        if(data_latitude_n_s.toLowerCase().equals("n")){
+            tracker_latitude = twoOfLat + (remOfLat/60.0);
+        }
+        else if (data_latitude_n_s.toLowerCase().equals("s")){
+            tracker_latitude = - (twoOfLat + (remOfLat/60.0));
+        }
+
+        if(data_longitude_e_w.toLowerCase().equals("e")) {
+            tracker_longitude = threeDataLon + (remOfLon/60);
+        }
+        else if(data_longitude_e_w.toLowerCase().equals("w")) {
+            tracker_longitude = -(threeDataLon + (remOfLon/60));
+        }
+
+        return new LatLng(tracker_latitude,tracker_longitude);
+
     }
 
 

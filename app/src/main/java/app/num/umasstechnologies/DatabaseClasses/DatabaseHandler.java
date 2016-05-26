@@ -227,6 +227,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int index = 0;
 
         while (index < len) {
+            cursor.moveToPosition(index);
             Vehicle tempV = new Vehicle(cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4));
             tempV.id = cursor.getString(0);
             listTrackers.add(tempV);

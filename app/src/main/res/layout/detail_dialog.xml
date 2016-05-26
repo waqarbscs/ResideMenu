@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:paddingLeft="10dp"
+    android:layout_height="360dp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:padding="5dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:orientation="vertical"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+
+                    android:text="Vehicle Testing 1984_43"
+                    android:textColor="#0000aa"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:id="@+id/txt_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/enginestate"
+                    android:textColor="@color/black"
+                    android:text="Engine Status Onn/Off: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/enginestate"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_engineStatusOnnOff"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/deviceid"
+                    android:textColor="@color/black"
+                    android:text="Device Id: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/deviceid"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_deviceid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/latitude"
+                    android:textColor="@color/black"
+                    android:text="Latitude: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/latitude"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_latitude"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/longitude"
+                    android:textColor="@color/black"
+                    android:text="Longitude: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/longitude"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_longitude"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/output"
+                    android:textColor="@color/black"
+                    android:text="Output: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/output"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_output"
+                    android:text="0"
+                    android:padding="2dp"
+                    android:background="#aaa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/input"
+                    android:textColor="@color/black"
+                    android:text="Inputs: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/input"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_input1"
+                    android:text="0"
+                    android:padding="2dp"
+                    android:background="#aaa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_toRightOf="@+id/txt_input1"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_input2"
+                    android:text="0"
+                    android:padding="2dp"
+                    android:background="#aaa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_toRightOf="@+id/txt_input2"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_input3"
+                    android:text="0"
+                    android:padding="2dp"
+                    android:background="#aaa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_toRightOf="@+id/txt_input3"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_input4"
+                    android:text="0"
+                    android:padding="2dp"
+                    android:background="#aaa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/mileage"
+                    android:textColor="@color/black"
+                    android:text="Mileage: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/mileage"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_mileage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/speed"
+                    android:textColor="@color/black"
+                    android:text="Speed: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/speed"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/username"
+                    android:textColor="@color/black"
+                    android:text="Username: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/username"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/last_signal"
+                    android:textColor="@color/black"
+                    android:text="Last Signal: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/last_signal"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_last_signal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/last_location"
+                    android:textColor="@color/black"
+                    android:text="Engine Status Onn/Off: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/last_location"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_last_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/last_move"
+                    android:textColor="@color/black"
+                    android:text="Engine Status Onn/Off: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/last_move"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_last_move"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/last_engine_on"
+                    android:textColor="@color/black"
+                    android:text="Last Engine Ons: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/last_engine_on"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_last_engine_on"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/last_engine_off"
+                    android:textColor="@color/black"
+                    android:text="Last Engine Off: "
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_toRightOf="@+id/last_engine_off"
+                    android:textColor="@color/black"
+                    android:id="@+id/txt_last_engine_off"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

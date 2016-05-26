@@ -68,11 +68,11 @@ public class TrackerLocationLoadService extends IntentService {
                         JSONObject jobject =  (new JSONObject(response)).getJSONArray("engine_on").getJSONObject(0);
 
                         String data_latitude =  jobject.getString("data_latitude");
-                        String data_latitude_n_s =  jobject.getString("data_latitude");
-                        String data_longitude =  jobject.getString("data_latitude");
-                        String data_longitude_e_w =  jobject.getString("data_latitude");
+                        String data_latitude_n_s =  jobject.getString("data_latitude_n_s");
+                        String data_longitude =  jobject.getString("data_longitude");
+                        String data_longitude_e_w =  jobject.getString("data_longitude_e_w");
 
-                        LatLng latlong =  getTheLatitudeLongitude(data_latitude,data_latitude_n_s,data_longitude,data_longitude_e_w);
+                        LatLng latlong = AppManager.getInstance(). getTheLatitudeLongitude(data_latitude,data_latitude_n_s,data_longitude,data_longitude_e_w);
 
 
                         Intent intentSuc = new Intent(ACTION_Success);
@@ -97,35 +97,7 @@ public class TrackerLocationLoadService extends IntentService {
 
     }
 
-    public LatLng getTheLatitudeLongitude(String data_latitude,String data_latitude_n_s,String data_longitude,String data_longitude_e_w) {
 
-        Double twoOfLat = Double.parseDouble( data_latitude.substring(0,2) );
-        Double remOfLat = Double.parseDouble( data_latitude.substring(2) );
-
-        Double threeDataLon = Double.parseDouble( data_longitude.substring(0,3) );
-        Double remOfLon = Double.parseDouble( data_longitude.substring(3) );
-
-        Double tracker_latitude = 0.0;
-        Double tracker_longitude = 0.0;
-
-
-        if(data_latitude_n_s.toLowerCase().equals("n")){
-            tracker_latitude = twoOfLat + (remOfLat/60);
-        }
-        else if (data_latitude_n_s.toLowerCase().equals("s")){
-            tracker_latitude = - (twoOfLat + (remOfLat/60));
-        }
-
-        if(data_longitude_e_w.toLowerCase().equals("e")) {
-            tracker_longitude = threeDataLon + (remOfLon/60);
-        }
-        else if(data_longitude_e_w.toLowerCase().equals("w")) {
-            tracker_longitude = -(threeDataLon + (remOfLon/60));
-        }
-
-        return new LatLng(tracker_latitude,tracker_longitude);
-
-    }
 
 
     public String getStringResultFromService_POSTForTrackers(String serviceURL) {

@@ -5,9 +5,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -16,11 +18,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
+import app.num.umasstechnologies.CustomDialogs.TrackerDetailDialog;
 import app.num.umasstechnologies.CustomServices.IntentDataLoadService;
 import app.num.umasstechnologies.CustomServices.TrackerLocationLoadService;
 
-public class map_direction extends AppCompatActivity {
+public class map_direction extends AppCompatActivity implements View.OnClickListener {
 
     private GoogleMap mGoogleMap;
 
@@ -32,6 +36,10 @@ public class map_direction extends AppCompatActivity {
 
 
     private ProgressDialog progressDialog;
+    LatLng latLng;
+
+
+    FloatingActionButton fab_showdetail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +50,7 @@ public class map_direction extends AppCompatActivity {
 
         tracker_id = getIntent().getStringExtra("tracker_id");
         engineStatus = getIntent().getStringExtra("engine_status");
+        latLng = new LatLng(getIntent().getDoubleExtra("lat",0.0),getIntent().getDoubleExtra("lon",0.0));
 
 
         SupportMapFragment fragment = (SupportMapFragment)  getSupportFragmentManager().findFragmentById(R.id.map);
@@ -60,6 +69,10 @@ public class map_direction extends AppCompatActivity {
         intentLoadLocation.putExtra("tracker_id",tracker_id);
         startService(intentLoadLocation);
 
+        fab_showdetail = (FloatingActionButton) findViewById(R.id.fab_showdetail);
+        fab_showdetail.setOnClickListener(this);
+
+
         //region broadcast reciever..
         mBroadCastReciever = new BroadcastReceiver() {
 
@@ -70,9 +83,13 @@ public class map_direction extends AppCompatActivity {
 
                 if(intent.getAction().endsWith(TrackerLocationLoadService.ACTION_Error)) {
                     Toast.makeText(map_direction.this, "There was error loading location.",Toast.LENGTH_SHORT).show();
+
+                    setMapCurrentLocation(latLng);
+
                 }
                 else if (intent.getAction().endsWith(TrackerLocationLoadService.ACTION_Fail)) {
                     Toast.makeText(map_direction.this, "There was error loading location.",Toast.LENGTH_SHORT).show();
+                    setMapCurrentLocation(latLng);
                 }
                 else if (intent.getAction().endsWith(TrackerLocationLoadService.ACTION_Success)){
 
@@ -94,6 +111,10 @@ public class map_direction extends AppCompatActivity {
 
     private void setMapCurrentLocation(LatLng latlong) {
         CameraUpdate cmf = CameraUpdateFactory.newLatLngZoom(latlong,13);
+
+        MarkerOptions mo = new MarkerOptions();
+        mo.position(latlong);
+        mGoogleMap.addMarker(mo);
         mGoogleMap.animateCamera(cmf);
     }
 
@@ -137,4 +158,16 @@ public class map_direction extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadCastReciever);
     }
 
+    TrackerDetailDialog tddialog;
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab_showdetail:
+
+                tddialog = new TrackerDetailDialog();
+
+                break;
+        }
+    }
 }

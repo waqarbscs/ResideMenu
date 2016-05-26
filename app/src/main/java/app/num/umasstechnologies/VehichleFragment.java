@@ -19,6 +19,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.ArrayList;
@@ -100,6 +102,7 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
                 else if (intent.getAction().endsWith(IntentDataLoadService.Action_TrackerInfo)){
                     String engineStatus = intent.getStringExtra("engine_status");
                     String tracker_id = intent.getStringExtra("tracker_id");
+                    LatLng latLng = new LatLng(intent.getDoubleExtra("lat",0.0),intent.getDoubleExtra("lon",0.0));
 
                     if(engineStatus.equals("-1")) {
                         Toast.makeText(AppManager.getInstance().getCurrentActivity(), "Could not find tracker information.", Toast.LENGTH_SHORT).show();
@@ -109,6 +112,9 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
                         Intent intentMap = new Intent(AppManager.getInstance().getCurrentActivity(),map_direction.class);
                         intentMap.putExtra("engine_status",engineStatus);
                         intentMap.putExtra("tracker_id",tracker_id);
+                        intentMap.putExtra("lat",latLng.latitude);
+                        intentMap.putExtra("lon",latLng.longitude);
+
                         AppManager.getInstance().getCurrentActivity().startActivity(intentMap);
 
                     }
@@ -290,7 +296,7 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
 
         Intent intentTrackerInfo = new Intent(AppManager.getInstance().getCurrentActivity(),IntentDataLoadService.class);
         intentTrackerInfo.putExtra("action","getTrackerInfo");
-        intentTrackerInfo.putExtra("tracker_id","282");
+        intentTrackerInfo.putExtra("tracker_id",trackerid);
         AppManager.getInstance().getCurrentActivity().startService(intentTrackerInfo);
 
     }

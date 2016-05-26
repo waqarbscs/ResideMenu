@@ -6,6 +6,8 @@ import android.content.Context;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,12 +75,23 @@ public class IntentDataLoadService extends IntentService {
                     }
                     else {
 
-                        String engineStatus = (new JSONObject(response)).getJSONArray("tracker_info").getJSONObject(0).getString("engine_status");
+                        JSONObject jsonObject = (new JSONObject(response)).getJSONArray("tracker_info").getJSONObject(0);
+
+                        String engineStatus = jsonObject.getString("engine_status");
+                        String data_latitude = jsonObject.getString("data_latitude");
+                        String data_latitude_n_s = jsonObject.getString("data_latitude_n_s");
+                        String data_longitude = jsonObject.getString("data_longitude");
+                        String data_longitude_e_w = jsonObject.getString("data_longitude_e_w");
+
+                        LatLng latlong =  AppManager.getInstance().getTheLatitudeLongitude(data_latitude,data_latitude_n_s,data_longitude,data_longitude_e_w);
 
                         Intent intentEStatus = new Intent(Action_TrackerInfo);
 
                         intentEStatus.putExtra("engine_status", engineStatus);
                         intentEStatus.putExtra("tracker_id",trackerId);
+                        intentEStatus.putExtra("lat",latlong.latitude);
+                        intentEStatus.putExtra("lon",latlong.longitude);
+
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentEStatus);
                     }
                 }
@@ -157,6 +170,7 @@ public class IntentDataLoadService extends IntentService {
                                 vehicle.trackerGenColor = tempObject.getString("tracker_general_color");
                                 vehicle.trackerName = tempObject.getString("tracker_name");
                                 vehicle.engineStatus = tempObject.getString("engine_status");
+
 
                                 db.addTracker(vehicle);
                             }
