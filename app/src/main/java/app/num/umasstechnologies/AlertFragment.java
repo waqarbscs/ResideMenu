@@ -50,29 +50,29 @@ public class AlertFragment extends Fragment {
 
     public  void setTestData() {
 
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
 
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
 
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
 
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
-        alertList.add(new Alert("Alert","Description of the Alert."));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
+        alertList.add(new Alert("Alert","Description of the Alert.",""));
 
     }
 }

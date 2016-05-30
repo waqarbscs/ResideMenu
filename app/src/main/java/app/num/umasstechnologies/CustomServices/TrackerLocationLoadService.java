@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +18,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import app.num.umasstechnologies.Singleton.AppManager;
 
@@ -67,32 +70,53 @@ public class TrackerLocationLoadService extends IntentService {
 
                         JSONObject jobject =  (new JSONObject(response)).getJSONArray("engine_on").getJSONObject(0);
 
-                        String data_latitude =  jobject.getString("data_latitude");
-                        String data_latitude_n_s =  jobject.getString("data_latitude_n_s");
-                        String data_longitude =  jobject.getString("data_longitude");
-                        String data_longitude_e_w =  jobject.getString("data_longitude_e_w");
+                        if(jobject.toString().contains("false")) {}
+                        else {
 
-                        LatLng latlong = AppManager.getInstance(). getTheLatitudeLongitude(data_latitude,data_latitude_n_s,data_longitude,data_longitude_e_w);
+                            JSONArray jsonArray = new JSONObject(response).getJSONArray("engine_on");
+
+                            int len = jsonArray.length();
+
+                            double[] lats = new double[len];
+                            double[] lons = new double[len];
+
+                            for(int index = 0; index < len ; index++) {
+
+                                JSONObject jsonObject = jsonArray.getJSONObject(index);
+
+                                String data_latitude = jsonObject.getString("data_latitude");
+                                String data_latitude_n_s = jsonObject.getString("data_latitude_n_s");
+                                String data_longitude = jsonObject.getString("data_longitude");
+                                String data_longitude_e_w = jsonObject.getString("data_longitude_e_w");
+                                LatLng latlong = AppManager.getInstance().getTheLatitudeLongitude(data_latitude, data_latitude_n_s, data_longitude, data_longitude_e_w);
+
+                                lats[index] = latlong.latitude;
+                                lons[index] = latlong.longitude;
+
+                            }
 
 
-                        Intent intentSuc = new Intent(ACTION_Success);
+                            Intent intentSuc = new Intent(ACTION_Success);
 
-                        intentSuc.putExtra("engine_state","1");
-                        intentSuc.putExtra("lat",String.valueOf(latlong.latitude));
-                        intentSuc.putExtra("lon",String.valueOf(latlong.longitude));
+                            intentSuc.putExtra("latitude", lats);
+                            intentSuc.putExtra("longitude", lons);
 
-                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentSuc);
-
+                            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentSuc);
+                        }
                     }
                 }
             }
 
         }
         catch (JSONException je) {
-
+            Intent intentE = new Intent(ACTION_Error);
+            intentE.putExtra("Message","json execption server may have changed the data formate.");
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentE);
         }
         catch (Exception ex) {
-
+            Intent intentE = new Intent(ACTION_Error);
+            intentE.putExtra("Message","Exception: "+ex.getMessage());
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentE);
         }
 
     }

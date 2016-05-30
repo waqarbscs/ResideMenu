@@ -1,15 +1,21 @@
 package app.num.umasstechnologies;
 
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import app.num.umasstechnologies.CustomDialogs.ViewDialog;
 import app.num.umasstechnologies.CustomServices.IntentDataLoadService;
 import app.num.umasstechnologies.Singleton.AppManager;
 
@@ -26,8 +32,12 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     private TextInputLayout til_name, til_email, til_contact, til_comment;
 
+    private BroadcastReceiver mBroadCastReciver;
+
+    private ProgressDialog progressDialog;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         inflatedView = inflater.inflate(R.layout.settings, container, false);
 
@@ -43,6 +53,34 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         edt_name = (EditText) inflatedView.findViewById(R.id.input_name);
         edt_contact = (EditText) inflatedView.findViewById(R.id.input_contactnumber);
         edt_email = (EditText) inflatedView.findViewById(R.id.input_email);
+
+        mBroadCastReciver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                if(progressDialog != null)
+                    progressDialog.hide();
+
+                String message = intent.getStringExtra("message");
+
+                if(intent.getAction().endsWith(IntentDataLoadService.Action_Email_Sent_Error)) {
+
+                    ViewDialog viewDialog = new ViewDialog();
+                    viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),message);
+
+                }
+                else if (intent.getAction().endsWith(IntentDataLoadService.Action_Email_Sent_Successfully) ) {
+                    ViewDialog viewDialog = new ViewDialog();
+                    viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),message);
+                }
+                else if (intent.getAction().endsWith(IntentDataLoadService.Action_Error)) {
+                    ViewDialog viewDialog = new ViewDialog();
+                    viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),message);
+                }
+
+            }
+        };
 
 
         return inflatedView;
@@ -83,6 +121,16 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                     intentFeedback.putExtra("comment",edt_comment.getText().toString());
                     intentFeedback.putExtra("action","sendfeedback");
 
+
+                    if(progressDialog == null)
+                        progressDialog = new ProgressDialog(AppManager.getInstance().getCurrentActivity());
+
+                    progressDialog.setMessage("Sending Email");
+                    progressDialog.setCancelable(false);
+                    progressDialog.setCanceledOnTouchOutside(false);
+
+                    progressDialog.show();
+
                     AppManager.getInstance().getCurrentActivity().startService(intentFeedback);
                 }
 
@@ -90,11 +138,39 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        LocalBroadcastManager
+                .getInstance(AppManager.getInstance()
+                .getCurrentActivity())
+                .registerReceiver(mBroadCastReciver, new IntentFilter( IntentDataLoadService.Action_Email_Sent_Error) );
+
+        LocalBroadcastManager
+                .getInstance(AppManager.getInstance()
+                        .getCurrentActivity())
+                .registerReceiver(mBroadCastReciver, new IntentFilter( IntentDataLoadService.Action_Error) );
+
+        LocalBroadcastManager
+                        .getInstance(AppManager.getInstance()
+                        .getCurrentActivity())
+                        .registerReceiver(mBroadCastReciver, new IntentFilter( IntentDataLoadService.Action_Email_Sent_Successfully) );
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        LocalBroadcastManager.getInstance(AppManager.getInstance().getCurrentActivity()).unregisterReceiver(mBroadCastReciver);
+    }
+
     public boolean isValidEmail(CharSequence target) {
         if (target == null) {
             return false;
         } else {
-            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+            return !android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
         }
     }
 }

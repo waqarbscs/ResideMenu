@@ -47,6 +47,10 @@ public class IntentDataLoadService extends IntentService {
     public static final String Action_TrackerInfo = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.TrackerInfo";
 
 
+    public static final String Action_Email_Sent_Successfully = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.EmailSent.Success";
+    public static final String Action_Email_Sent_Error = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.EmailSent.Error";
+
+
     private static final String Tag = "IntentDataLoadService";
 
     public IntentDataLoadService() {
@@ -89,8 +93,30 @@ public class IntentDataLoadService extends IntentService {
 
                         intentEStatus.putExtra("engine_status", engineStatus);
                         intentEStatus.putExtra("tracker_id",trackerId);
-                        intentEStatus.putExtra("lat",latlong.latitude);
-                        intentEStatus.putExtra("lon",latlong.longitude);
+                        intentEStatus.putExtra("latitude",latlong.latitude);
+                        intentEStatus.putExtra("longitude",latlong.longitude);
+
+                        intentEStatus.putExtra("last_gprs",String.valueOf(jsonObject.getString("last_gprs")));
+                        intentEStatus.putExtra("last_signal",String.valueOf(jsonObject.getString("last_signal")));
+                        intentEStatus.putExtra("last_move",String.valueOf(jsonObject.getString("last_move")));
+                        intentEStatus.putExtra("last_engine_on",String.valueOf(jsonObject.getString("last_engine_on")));
+                        intentEStatus.putExtra("last_engine_off",String.valueOf(jsonObject.getString("last_engine_off")));
+
+                        intentEStatus.putExtra("device_id",String.valueOf(jsonObject.getString("id")));
+                        intentEStatus.putExtra("name",String.valueOf(jsonObject.getString("tracker_name")));
+                        intentEStatus.putExtra("mileage",String.valueOf(jsonObject.getString("tracker_mileage_total")));
+
+                        String[] inputOutput = jsonObject.getString("inputs_outputs").split("|");
+
+                        intentEStatus.putExtra("output_bit",String.valueOf(inputOutput[6]));
+
+                        intentEStatus.putExtra("input_bit_1",String.valueOf(inputOutput[1]));
+                        intentEStatus.putExtra("input_bit_2",String.valueOf(inputOutput[2]));
+                        intentEStatus.putExtra("input_bit_3",String.valueOf(inputOutput[3]));
+                        intentEStatus.putExtra("input_bit_4",String.valueOf(inputOutput[4]));
+
+                        intentEStatus.putExtra("speed",String.valueOf(jsonObject.getString("speed_value")));
+
 
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentEStatus);
                     }
@@ -115,6 +141,21 @@ public class IntentDataLoadService extends IntentService {
 
                     String result = getStringResultFromService_POSTVariables(url,params);
                     Log.w("Result",result);
+
+                    if(result == null || result.contains("false")) {
+                        Intent errorbroadcast = new Intent(Action_Email_Sent_Successfully);
+                        errorbroadcast.putExtra("message","Server Error while sending email.");
+                        AppManager.getInstance().setVariableInPreferences("missed_event",11); //setting that you have missed it
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(errorbroadcast);
+                    }
+                    else if(result.contains("true")) {
+
+                        Intent errorbroadcast = new Intent(Action_Email_Sent_Successfully);
+                        errorbroadcast.putExtra("message","Email has been sent successfully.");
+                        AppManager.getInstance().setVariableInPreferences("missed_event",11); //setting that you have missed it
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(errorbroadcast);
+
+                    }
 
                 }
                 else if (action.equals("getTracker")) {
@@ -207,25 +248,23 @@ public class IntentDataLoadService extends IntentService {
                     }
 
 
-                } else if (action.equals("sendFeedback")) {
-
-                    //we need to send the feedback
-                    String message = intent.getStringExtra("Message");
-                    String name = intent.getStringExtra("Name");
-                    String phoneNumber = intent.getStringExtra("PhoneNumber");
-
-
                 }
+
+                AppManager.getInstance().setVariableInPreferences("missed_event",11); //setting that you have missed it
             }
         }
         catch (JSONException jE) {
             Intent errorbroadcast = new Intent(Action_Error);
             errorbroadcast.putExtra("message",jE.getMessage());
+
+            AppManager.getInstance().setVariableInPreferences("missed_event",12); //setting that you have missed it
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(errorbroadcast);
         }
         catch (Exception ex) {
             Intent errorbroadcast = new Intent(Action_Error);
             errorbroadcast.putExtra("message",ex.getMessage());
+
+            AppManager.getInstance().setVariableInPreferences("missed_event",12); //setting that you have missed it
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(errorbroadcast);
         }
     }

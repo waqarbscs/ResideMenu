@@ -57,7 +57,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".SplashScreen">
+        <activity android:name=".SplashScreen" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -65,7 +65,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Login" />
+        <activity android:name=".Login" android:screenOrientation="portrait" />
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -100,7 +100,7 @@
             android:name=".CustomServices.IntentDataLoadService"
             android:exported="false" />
 
-        <activity android:name=".map_direction" />
+        <activity android:name=".map_direction" android:screenOrientation="portrait" />
 
         <service
             android:name=".CustomServices.TrackerLocationLoadService"

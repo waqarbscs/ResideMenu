@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:layout_marginRight="20dp"
+    android:layout_marginLeft="20dp"
+    android:paddingRight="10dp"
     android:layout_width="match_parent"
     android:background="@color/white"
     android:paddingLeft="10dp"
@@ -45,12 +48,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <TextView
+                <ImageView
                     android:layout_toRightOf="@+id/enginestate"
-                    android:textColor="@color/black"
-                    android:id="@+id/txt_engineStatusOnnOff"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:id="@+id/imv_engineStatusOnnOff"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp" />
 
             </RelativeLayout>
 
@@ -295,7 +297,7 @@
                 <TextView
                     android:id="@+id/last_location"
                     android:textColor="@color/black"
-                    android:text="Engine Status Onn/Off: "
+                    android:text="Last Location: "
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -318,7 +320,7 @@
                 <TextView
                     android:id="@+id/last_move"
                     android:textColor="@color/black"
-                    android:text="Engine Status Onn/Off: "
+                    android:text="Last Move: "
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -340,7 +342,7 @@
                 <TextView
                     android:id="@+id/last_engine_on"
                     android:textColor="@color/black"
-                    android:text="Last Engine Ons: "
+                    android:text="Last Engine On: "
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -371,6 +373,21 @@
                     android:layout_toRightOf="@+id/last_engine_off"
                     android:textColor="@color/black"
                     android:id="@+id/txt_last_engine_off"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+
+                <Button
+                    android:textColor="@color/black"
+                    android:id="@+id/btn_ok"
+                    android:text="Ok"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
