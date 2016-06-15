@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.num.umasstechnologies.Adapters.lstVehicleAdapter;
+import app.num.umasstechnologies.CustomDialogs.ViewDialog;
 import app.num.umasstechnologies.CustomServices.IntentDataLoadService;
 import app.num.umasstechnologies.DatabaseClasses.DatabaseHandler;
+import app.num.umasstechnologies.Interfaces.IFragmentEvents;
 import app.num.umasstechnologies.Models.CompanyInfo;
 import app.num.umasstechnologies.Models.Members;
 import app.num.umasstechnologies.Models.Vehicle;
@@ -81,6 +83,10 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
                 if(intent.getAction().endsWith(IntentDataLoadService.Action_Error)) {
                     //the action error thingi..
 
+                    //but if this is error we have to show the error
+                    ViewDialog viewDialog = new ViewDialog();
+                    viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),intent.getStringExtra("message"));
+
                 }
                 else if(intent.getAction().endsWith(IntentDataLoadService.Action_Fail)) {
                     //if we are not successful and we have failed..
@@ -100,6 +106,9 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
 
                 }
                 else if (intent.getAction().endsWith(IntentDataLoadService.Action_TrackerInfo)){
+
+
+
                     String engineStatus = intent.getStringExtra("engine_status");
                     String tracker_id = intent.getStringExtra("tracker_id");
                     LatLng latLng = new LatLng(intent.getDoubleExtra("lat",0.0),intent.getDoubleExtra("lon",0.0));
@@ -140,6 +149,8 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
 
                     }
                 }
+
+                AppManager.getInstance().removeVariableInPreferences("missed_event");
 
 
             }
@@ -188,8 +199,13 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
         mList = dbhandler.getListOfMembers();
 
 
-        if(mList == null || mList.size() <= 0 )
-            return null;
+        if(mList == null || mList.size() <= 0 ) {
+
+            if(mList == null) {
+                mList = new ArrayList<>();
+            }
+
+        }
 
         String[] memberArray = new String[mList.size() + 1];
         memberArray[0] = "All";
@@ -202,12 +218,23 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
 
     }
 
+
+
     public boolean loatDataFromDatabase() {
 
         //loading data from database..
         String[] listOfNames = getListOfMembersFromDatabase();
 
         Spinner spn_companyList = (Spinner) _inflatedView.findViewById(R.id.spn_member_list);
+
+        if(listOfNames.length == 1) {
+            spn_companyList.setEnabled(false);
+        }
+        else {
+            spn_companyList.setEnabled(true);
+            firstTimeLoad = true;
+        }
+
         spnAdapter = new ArrayAdapter<String>(AppManager.getInstance().getCurrentActivity(),android.R.layout.simple_spinner_item,listOfNames);
         spn_companyList.setAdapter(spnAdapter);
         spn_companyList.setOnItemSelectedListener(this);
@@ -249,7 +276,34 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
         int missedEvent = AppManager.getInstance().getIntVariablesInPreferences("missed_event");
 
         if(missedEvent == 11) {
-            //we have missed the event..
+            //we have missed the event.. so lets first empty this variabls
+
+            AppManager.getInstance().removeVariableInPreferences("missed_event");
+            if(progressDialog != null) {
+                progressDialog.hide();
+            }
+
+            loatDataFromDatabase();
+
+        }
+
+        else if (missedEvent == 31) {
+            //if we have missed that event due to any of the reasons..
+            //please do what could have been done when it was not missed
+            if(progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.hide();
+                AppManager.getInstance().removeVariableInPreferences("missed_event");
+                Toast.makeText(AppManager.getInstance().getCurrentActivity().getApplication().getApplicationContext(),"click your selection again.",Toast.LENGTH_SHORT).show();
+            }
+        }
+        else if(missedEvent == 51) {
+
+            //but if this is error we have to show the error
+            ViewDialog viewDialog = new ViewDialog();
+            viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),"Check your internet connection.");
+            // will do things like logut down
+
+            Logout(); //this is the loading event missed not other normal event bacha...
 
         }
 
@@ -260,11 +314,7 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
 
     }
 
-    public  void setTestData() {
 
-        vehicleList.add(new Vehicle("Car1","Description of the car.","0","0"));
-
-    }
 
     int selectedItemDropDown = 0;
 
@@ -284,6 +334,18 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
         else
             loadItemsFromServer(mList.get(position-1).id, position);
 
+    }
+
+    IFragmentEvents fragmentEvents;
+
+    public void setOnEventOccurredListener(IFragmentEvents pFragmentEvents) {
+        fragmentEvents =  pFragmentEvents;
+    }
+
+    public void Logout() {
+        if(fragmentEvents!=null) {
+            fragmentEvents.onEventOccured(101); //101 = logout
+        }
     }
 
     public void loadItemsFromServer(String memberid, int selectedItem) {
@@ -320,6 +382,13 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+        if(!AppManager.getInstance().isInternetAvailable())
+        {
+            Toast.makeText(AppManager.getInstance().getCurrentActivity().getApplicationContext(),"Please connect to internet.",Toast.LENGTH_SHORT).show();
+        }
+
         //when item is clicked on list view run this event...
 
         if(progressDialog == null)

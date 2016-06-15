@@ -65,18 +65,22 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                 String message = intent.getStringExtra("message");
 
                 if(intent.getAction().endsWith(IntentDataLoadService.Action_Email_Sent_Error)) {
-
                     ViewDialog viewDialog = new ViewDialog();
-                    viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),message);
-
+                    viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),"Email send failed check your interent connection.");
                 }
                 else if (intent.getAction().endsWith(IntentDataLoadService.Action_Email_Sent_Successfully) ) {
+
+                    edt_comment.setText("");
+                    edt_contact.setText("");
+                    edt_email.setText("");
+                    edt_name.setText("");
+
                     ViewDialog viewDialog = new ViewDialog();
-                    viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),message);
+                    viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),"Email Send Successfull");
                 }
                 else if (intent.getAction().endsWith(IntentDataLoadService.Action_Error)) {
                     ViewDialog viewDialog = new ViewDialog();
-                    viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),message);
+                    viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),"Failed, Check your internet connection.");
                 }
 
             }

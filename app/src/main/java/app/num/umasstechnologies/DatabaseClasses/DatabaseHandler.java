@@ -238,6 +238,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public List<Members> getListOfMembers() {
+
         List<Members> listMembers = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();

@@ -39,6 +39,7 @@ import app.num.umasstechnologies.Singleton.AppManager;
  * helper methods.
  */
 public class IntentDataLoadService extends IntentService {
+
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     public static final String Action_Success = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.Success";
@@ -71,7 +72,14 @@ public class IntentDataLoadService extends IntentService {
                     String link = "http://massuae.dyndns.org:8088/tracking_zone/mob_app_srvcs/track/get_tracker_info/" + AppManager.Hand_Shake + "/" +trackerId;
                     String response = getStringResultFromService_POSTForTrackers(link);
 
-                    if( (new JSONObject(response)).getString("tracker_info").toString().equals("false") ){
+                    if(response == null) {
+                        Intent errorbroadcast = new Intent(Action_Error);
+                        errorbroadcast.putExtra("message","Check Your Internet Connection.");
+                        AppManager.getInstance().setVariableInPreferences("missed_event",51); //innternet connection problem
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(errorbroadcast);
+                    }
+
+                    else if( (new JSONObject(response)).getString("tracker_info").toString().equals("false") ){
                         Intent intentEStatus = new Intent(Action_TrackerInfo);
                         intentEStatus.putExtra("engine_status", "-1");
                         intentEStatus.putExtra("tracker_id",trackerId);
@@ -117,7 +125,7 @@ public class IntentDataLoadService extends IntentService {
 
                         intentEStatus.putExtra("speed",String.valueOf(jsonObject.getString("speed_value")));
 
-
+                        AppManager.getInstance().setVariableInPreferences("missed_event",31); //setting that you have missed it
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentEStatus);
                     }
                 }
@@ -145,14 +153,14 @@ public class IntentDataLoadService extends IntentService {
                     if(result == null || result.contains("false")) {
                         Intent errorbroadcast = new Intent(Action_Email_Sent_Successfully);
                         errorbroadcast.putExtra("message","Server Error while sending email.");
-                        AppManager.getInstance().setVariableInPreferences("missed_event",11); //setting that you have missed it
+                        AppManager.getInstance().setVariableInPreferences("missed_event",21); //setting that you have missed it
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(errorbroadcast);
                     }
                     else if(result.contains("true")) {
 
                         Intent errorbroadcast = new Intent(Action_Email_Sent_Successfully);
                         errorbroadcast.putExtra("message","Email has been sent successfully.");
-                        AppManager.getInstance().setVariableInPreferences("missed_event",11); //setting that you have missed it
+                        AppManager.getInstance().setVariableInPreferences("missed_event",21); //setting that you have missed it
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(errorbroadcast);
 
                     }
@@ -235,14 +243,8 @@ public class IntentDataLoadService extends IntentService {
 
                         }
 
-                        Log.w(Tag, "TrakcerMemberList: " + response);
-
-                        //here once we get the response we will see how it will work..
-                        //we have to add members in members table..
-                        //and we have to add trackers in trackers table
-                        //after emptying both of the tables.. keeping only needed data..
-
                         Intent errorbroadcast = new Intent(Action_Success);
+                        AppManager.getInstance().setVariableInPreferences("missed_event",11); //setting that you have missed it
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(errorbroadcast);
 
                     }
@@ -250,7 +252,7 @@ public class IntentDataLoadService extends IntentService {
 
                 }
 
-                AppManager.getInstance().setVariableInPreferences("missed_event",11); //setting that you have missed it
+
             }
         }
         catch (JSONException jE) {
@@ -296,8 +298,11 @@ public class IntentDataLoadService extends IntentService {
             httpURLConnection.setUseCaches(false);
             httpURLConnection.setRequestMethod("POST");
 
+            httpURLConnection.setReadTimeout(3000);
+
             //handling the response
             int requestCode = httpURLConnection.getResponseCode();
+
             if(requestCode != 200) {
                 throw  new IOException("PostFailed: StatusCode="+requestCode);
             }
@@ -371,8 +376,11 @@ public class IntentDataLoadService extends IntentService {
             wr.flush();
             wr.close();
 
+            httpURLConnection.setReadTimeout(3000);
+
             //handling the response
             int requestCode = httpURLConnection.getResponseCode();
+
             if(requestCode != 200) {
                 throw  new IOException("PostFailed: StatusCode="+requestCode);
             }

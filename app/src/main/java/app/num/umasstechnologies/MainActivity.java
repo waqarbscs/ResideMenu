@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -20,12 +21,13 @@ import com.special.ResideMenu.ResideMenuItem;
 
 import app.num.umasstechnologies.DatabaseClasses.DatabaseHandler;
 import app.num.umasstechnologies.GCMClasses.GCMRegistrationIntentService;
+import app.num.umasstechnologies.Interfaces.IFragmentEvents;
 import app.num.umasstechnologies.Models.user;
 import app.num.umasstechnologies.Singleton.AppManager;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, IFragmentEvents{
 
-    private BroadcastReceiver mRegistrationBroadcastReciever;
+
 
     private ResideMenu resideMenu;
     private Context mContext;
@@ -35,8 +37,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ResideMenuItem itemAlerts;
     private ResideMenuItem itemLogout;
 
+    private TextView headerName;
+
     private user currentUser = null;
 
+
+    @Override
+    public void onBackPressed() {
+
+        //here to write the code
+
+        if(!resideMenu.isOpened())
+            resideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
+        else
+            super.onBackPressed();
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +61,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         AppManager.getInstance().setCurrentActivity(this);
+
+        headerName = (TextView) findViewById(R.id.txtvHeaderName);
+
+        headerName.setText("Vehicle");
 
         mContext = this;
 
@@ -56,14 +76,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onReceive(Context context, Intent intent) {
                 if(intent.getAction().endsWith(GCMRegistrationIntentService.REGISTRATION_SUCCCESS)) {
-                    String token = intent.getStringExtra("Token");
-                    Toast.makeText(getApplicationContext(), "GCMToken: "+token, Toast.LENGTH_SHORT).show();
+                    tokenGCM = intent.getStringExtra("Token");
+                    //Toast.makeText(getApplicationContext(), "GCMToken: "+tokenGCM, Toast.LENGTH_SHORT).show();
+                    //if we get the token we save it and then we use it when logging in..
                 }
                 else if(intent.getAction().endsWith(GCMRegistrationIntentService.REGISTRATION_ERROR)) {
-                    Toast.makeText(getApplicationContext(), "GCMTokenError: ", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getApplicationContext(), "GCMTokenError: ", Toast.LENGTH_SHORT).show();
                 }
             }
         };
+
+
 
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
 
@@ -83,8 +106,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         setUpMenu();
-        if( savedInstanceState == null )
-            changeFragment(new VehichleFragment());
+        if( savedInstanceState == null ) {
+
+            if(vehichleFragment == null)
+                vehichleFragment =  new VehichleFragment();
+
+            String loginString = getIntent().getStringExtra("login_status");
+
+            if(loginString != null) {
+
+                if (loginString.equals("just_login")) {
+                    vehichleFragment.loadItemsFromServer("0", 0);
+                }
+
+            }
+
+            changeFragment(vehichleFragment);
+        }
     }
 
     private void setUpMenu() {
@@ -102,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         itemVehicles  = new ResideMenuItem(this, R.drawable.icon_profile,  "Vehicles");
+
         itemAlerts = new ResideMenuItem(this, R.drawable.icon_calendar, "Alerts");
         itemFeedback = new ResideMenuItem(this, R.drawable.icon_settings, "Feedback");
         itemLogout = new ResideMenuItem(this,R.drawable.icon_home, "Logout");
@@ -118,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         itemAlerts.setOnClickListener(this);
         itemFeedback.setOnClickListener(this);
         itemLogout.setOnClickListener(this);
+
+
 
       //  resideMenu.addMenuItem(itemHome, ResideMenu.DIRECTION_LEFT);
         resideMenu.addMenuItem(itemVehicles, ResideMenu.DIRECTION_LEFT);
@@ -142,8 +183,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         Log.w("MainActivity","OnResume");
+
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReciever, new IntentFilter(GCMRegistrationIntentService.REGISTRATION_SUCCCESS));
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReciever, new IntentFilter(GCMRegistrationIntentService.REGISTRATION_ERROR));
+
     }
 
     @Override
@@ -158,6 +201,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return resideMenu.dispatchTouchEvent(ev);
     }
 
+    private VehichleFragment vehichleFragment;
+
+    private BroadcastReceiver mRegistrationBroadcastReciever;
+
+    private String tokenGCM;
+
     @Override
     public void onClick(View view) {
 
@@ -166,24 +215,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        // }else
 
         if (view == itemAlerts){
+
+            headerName.setText("Alerts");
             changeFragment(new AlertFragment());
+
         }else if (view == itemVehicles){
-            changeFragment(new VehichleFragment());
+
+            headerName.setText("Vehicle");
+
+            if(vehichleFragment == null) {
+                vehichleFragment = new VehichleFragment();
+                vehichleFragment.setOnEventOccurredListener(this);
+            }
+
+
+            //if we are just loged in then plz load the trackers .. this is fine totally i hope so
+
+            if(getIntent().getStringExtra("login_status") != null) {
+
+                if (getIntent().getStringExtra("login_status").toString().equals("just_login")) {
+                    vehichleFragment.loadItemsFromServer("0", 0);
+                }
+            }
+
+            changeFragment(vehichleFragment);
+
+
         }else if (view == itemFeedback){
+            headerName.setText("FeedBack");
             changeFragment(new SettingsFragment());
         }
         else if (view == itemLogout) {
             //here we will logut.. so delete things from database..
-            DatabaseHandler dbhandler = new DatabaseHandler(MainActivity.this);
-            dbhandler.deleteAllInformation();
-            Intent intentLoginScreen = new Intent(MainActivity.this,Login.class);
-
-            AppManager.getInstance().removeCompany();
-
-            finish();
-            startActivity(intentLoginScreen);
+            Logout();
 
         }
+
+
 
         resideMenu.closeMenu();
     }
@@ -191,12 +259,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ResideMenu.OnMenuListener menuListener = new ResideMenu.OnMenuListener() {
         @Override
         public void openMenu() {
-            Toast.makeText(mContext, "Menu is opened!", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(mContext, "Menu is opened!", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void closeMenu() {
-            Toast.makeText(mContext, "Menu is closed!", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(mContext, "Menu is closed!", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -210,9 +278,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void Logout() {
+        DatabaseHandler dbhandler = new DatabaseHandler(MainActivity.this);
+        dbhandler.deleteAllInformation();
+        Intent intentLoginScreen = new Intent(MainActivity.this,Login.class);
+
+        AppManager.getInstance().removeCompany();
+
+        finish();
+        startActivity(intentLoginScreen);
+    }
+
     // What good method is to access resideMenu？
     public ResideMenu getResideMenu(){
         return resideMenu;
+    }
+
+    @Override
+    public void onEventOccured(int eventId) {
+        if(eventId == 101) {
+            Logout();
+        }
     }
 }
 

@@ -43,7 +43,7 @@ public class AppManager {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getCurrentActivity().getApplicationContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(key,value);
-        editor.commit();
+        editor.apply();
     }
 
     public void setVariableInPreferences(String key, int value) {

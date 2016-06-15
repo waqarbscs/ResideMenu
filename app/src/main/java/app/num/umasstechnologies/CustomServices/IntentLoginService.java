@@ -60,14 +60,158 @@ public class IntentLoginService extends IntentService {
 
         if (intent != null) {
             final String action = intent.getAction();
-
-
-
+            String token = intent.getStringExtra("token");
+            String deviceid = intent.getStringExtra("deviceid");
             String username = intent.getStringExtra("username");
             String password = intent.getStringExtra("password");
             LoginTheUser(username,password);
 
         }
+    }
+
+    public int SaveLoginDetails(String username, String devicdeid, String token) {
+        String link = "http://massuae.dyndns.org:8088/tracking_zone/mob_app_srvcs/login/save_login/"+ AppManager.Hand_Shake+"/"+username+"/"+"/$token/$device_type";
+
+        int codeStatus = -1; // 1 = Error
+        String errorMessage = "NA";
+
+        try {
+            String result = getStringResultFromService_POST(link);
+            if(result == null) {
+                //the server didn't return anything..
+                codeStatus = 1;
+                errorMessage = "server retuned null.";
+                return codeStatus;
+            }
+
+            result = result.replace("<br>", " ");
+
+            Log.w("Response",result);
+
+
+            JSONObject jsonObject  = new JSONObject(result);
+
+            if(jsonObject.has("user_data")) {
+
+                String resData = jsonObject.get("user_data").toString();
+
+
+                if(resData.equals("false")) {
+
+                    Intent failIntent = new Intent(BroadCastFail);
+                    LocalBroadcastManager.getInstance(IntentLoginService.this).sendBroadcast(failIntent);
+
+                }
+                else if (  jsonObject.has("company_info")) { //it will have atleast one company important
+
+                    //if it has company info mean its one company
+                    //else it will have company list
+                    //got the user ofcourse...
+
+                    String uData = jsonObject.get("user_data").toString();
+                    String ciData = jsonObject.get("company_info").toString();
+
+                    JSONArray userDataArray = new JSONArray(uData);
+                    JSONArray userCompInfoArray = new JSONArray(ciData);
+
+
+
+                    JSONObject userDataObject = new JSONObject( userDataArray.getString(0).toString() );
+                    JSONObject companyInforObject = new JSONObject( userCompInfoArray.getString(0).toString() );
+
+                    user foundUser =  new user();
+
+                    foundUser.setId( Integer.valueOf( userDataObject.get("id").toString() ) );
+                    foundUser.setUsername( userDataObject.get("name").toString() );
+                    foundUser.setType( Integer.valueOf( userDataObject.get("type").toString() ) );
+                    foundUser.setReference( Integer.valueOf( userDataObject.get("ref_company").toString() ) );
+
+                    CompanyInfo cInformation = new CompanyInfo();
+                    cInformation.setName(companyInforObject.getString("name"));
+                    cInformation.setId(Integer.valueOf(companyInforObject.getString("id")));
+                    cInformation.setLogo(companyInforObject.getString("logo"));
+
+
+                    //first we need to remove all the data of old user .. and than we need to add data
+                    //for new user..
+
+                    DatabaseHandler dbhandler = new DatabaseHandler(getApplicationContext());
+
+                    dbhandler.addUser(foundUser); //this will also set user type so we know the stuff..
+                    dbhandler.addCompanyInfo(cInformation); //this shall insert company information..
+
+                    //adding information in database...
+
+                    //we also have to delte information on logout.. :O..
+
+                    //chalo bhai database mein fields daldi..
+                    AppManager.getInstance().setCompanyInPreferences(cInformation);
+                    Intent successIntent = new Intent(BroadCastSuccess);
+                    LocalBroadcastManager.getInstance(IntentLoginService.this).sendBroadcast(successIntent);
+
+                }
+                else if (jsonObject.has("company_list")) {
+
+                    //we have multiple objects of that whatever
+                    String uData = jsonObject.get("user_data").toString();
+                    String ciData = jsonObject.get("company_list").toString();
+
+                    JSONArray userDataArray = new JSONArray(uData);
+                    JSONArray userCompInfoArray = jsonObject.getJSONArray("company_list");
+
+                    JSONObject userDataObject = new JSONObject( userDataArray.getString(0).toString() );
+
+                    user foundUser =  new user();
+
+                    foundUser.setId( Integer.valueOf( userDataObject.get("id").toString() ) );
+                    foundUser.setUsername( userDataObject.get("name").toString() );
+                    foundUser.setType( Integer.valueOf( userDataObject.get("type").toString() ) );
+                    foundUser.setReference( Integer.valueOf( userDataObject.get("ref_company").toString() ) );
+
+                    int len = userCompInfoArray.length();
+
+                    DatabaseHandler dbhandler = new DatabaseHandler(getApplicationContext());
+
+                    dbhandler.addUser(foundUser); //this will also set user type so we know the stuff..
+
+                    List<CompanyInfo> cInformationList = new ArrayList<>();
+
+                    for(int index = 0; index < len; index++) {
+                        JSONObject tempObject = userCompInfoArray.getJSONObject(index);
+                        CompanyInfo cInformation = new CompanyInfo();
+                        cInformation.setName(tempObject.getString("name"));
+                        cInformation.setId(Integer.valueOf(tempObject.getString("id")));
+                        // cInformation.setLogo(tempObject.getString("logo"));
+                        cInformationList.add(cInformation);
+                        dbhandler.addCompanyInfo(cInformation); //this shall insert company information..
+                    }
+
+                    //chalo bhai database mein fields daldi..
+                    Intent successIntent = new Intent(BroadCastSuccess);
+                    LocalBroadcastManager.getInstance(IntentLoginService.this).sendBroadcast(successIntent);
+                }
+
+            }
+            else {
+                Intent errorIntent = new Intent(BroadCastError);
+                LocalBroadcastManager.getInstance(IntentLoginService.this).sendBroadcast(errorIntent);
+            }
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+            Intent dataRecieve = new Intent(BroadCastError);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(dataRecieve);
+
+            codeStatus = 1;
+            return codeStatus;
+
+        }
+        //      catch (JSONException jex) {
+//        }
+
+        return codeStatus;
+
     }
 
 
@@ -84,6 +228,8 @@ public class IntentLoginService extends IntentService {
                 //the server didn't return anything..
                 codeStatus = 1;
                 errorMessage = "server retuned null.";
+                Intent failIntent = new Intent(BroadCastFail);
+                LocalBroadcastManager.getInstance(IntentLoginService.this).sendBroadcast(failIntent);
                 return codeStatus;
             }
 
@@ -246,9 +392,12 @@ public class IntentLoginService extends IntentService {
             httpURLConnection.setUseCaches(false);
             httpURLConnection.setRequestMethod("POST");
 
+            httpURLConnection.setReadTimeout(2000);
 
             //handling the response
             int requestCode = httpURLConnection.getResponseCode();
+
+
             if(requestCode != 200) {
                 throw  new IOException("PostFailed: StatusCode="+requestCode);
             }

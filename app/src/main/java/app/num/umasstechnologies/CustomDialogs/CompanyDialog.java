@@ -69,6 +69,7 @@ public class CompanyDialog implements Spinner.OnItemSelectedListener {
 
                 AppManager.getInstance().setCompanyInPreferences(companyInfos[selectedPosition]);
                 Intent intentMainScreen = new Intent(activity, MainActivity.class);
+                intentMainScreen.putExtra("login_status","just_login"); //like just married :D
                 activity.startActivity(intentMainScreen);
 
             }

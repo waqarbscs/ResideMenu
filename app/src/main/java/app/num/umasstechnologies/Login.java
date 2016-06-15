@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,7 @@ import app.num.umasstechnologies.CustomDialogs.CompanyDialog;
 import app.num.umasstechnologies.CustomDialogs.ViewDialog;
 import app.num.umasstechnologies.CustomServices.IntentLoginService;
 import app.num.umasstechnologies.DatabaseClasses.DatabaseHandler;
+import app.num.umasstechnologies.GCMClasses.GCMRegistrationIntentService;
 import app.num.umasstechnologies.Models.CompanyInfo;
 import app.num.umasstechnologies.Models.user;
 import app.num.umasstechnologies.Singleton.AppManager;
@@ -42,13 +44,26 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     BroadcastReceiver mBroadCastReciever;
 
+    //we have to get ime and also the gcm token over here not in main activity.. send boht.. than when loggin out we can
+    //use imei to logout
+
+    private String deviceId;
+
+    private String tokenGCM;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        TelephonyManager tm = ( TelephonyManager ) getSystemService(Context.TELEPHONY_SERVICE);
+        deviceId =  tm.getDeviceId();
+
+
         AppManager.getInstance().setCurrentActivity(this);
+
+
+
 
         btn_login = (AppCompatButton) findViewById(R.id.btn_login);
         txtil_password = (TextInputLayout) findViewById(R.id.til_password);
@@ -67,10 +82,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
                 if(intent.getAction().endsWith(IntentLoginService.BroadCastError)){
 
-                    Toast.makeText(Login.this,"Check Your Internet or Json Exception.",Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(Login.this,"Check Your Internet.",Toast.LENGTH_SHORT).show();
 
                     ViewDialog vDialog = new ViewDialog();
-                    vDialog.showDialog(Login.this, "Check your internet, network error or json exception");
+                    vDialog.showDialog(Login.this, "Check your internet, network error");
 
                 }
                 else if(intent.getAction().endsWith(IntentLoginService.BroadCastSuccess)) {
@@ -114,7 +129,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 }
                 else if(intent.getAction().endsWith(IntentLoginService.BroadCastFail)) {
 
-                    Toast.makeText(Login.this,"Wrong username/password",Toast.LENGTH_SHORT).show();
+               //     Toast.makeText(Login.this,"Wrong username/password",Toast.LENGTH_SHORT).show();
                     ViewDialog vDialog = new ViewDialog();
                     vDialog.showDialog(Login.this, "Wrong Username/Password");
                 }
@@ -137,6 +152,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadCastReciever, new IntentFilter(IntentLoginService.BroadCastSuccess));
 
 
+
     }
 
     @Override
@@ -152,6 +168,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         switch (v.getId()) {
 
             case R.id.btn_login:
+
 
                 if(progressDialog == null) {
                     progressDialog = new ProgressDialog(Login.this);
@@ -182,6 +199,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
                     intent.putExtra("username",edt_username.getText().toString());
                     intent.putExtra("password",edt_password.getText().toString());
+                    intent.putExtra("token",tokenGCM);
+                    intent.putExtra("deviceid",deviceId);
 
                     Log.d("Service","Starting the login service.");
                     this.startService(intent);
