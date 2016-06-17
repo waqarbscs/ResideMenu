@@ -107,8 +107,6 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
                 }
                 else if (intent.getAction().endsWith(IntentDataLoadService.Action_TrackerInfo)){
 
-
-
                     String engineStatus = intent.getStringExtra("engine_status");
                     String tracker_id = intent.getStringExtra("tracker_id");
                     LatLng latLng = new LatLng(intent.getDoubleExtra("lat",0.0),intent.getDoubleExtra("lon",0.0));
@@ -182,7 +180,7 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
                 //here we are loading the progress dialog whatever..
                 Intent intentDataLoader = new Intent(AppManager.getInstance().getCurrentActivity(), IntentDataLoadService.class);
                 intentDataLoader.putExtra("action", "getTracker");
-                intentDataLoader.putExtra("memberid", "0");
+                intentDataLoader.putExtra("memberid", 0);
 
                 AppManager.getInstance().getCurrentActivity().startService(intentDataLoader);
             }

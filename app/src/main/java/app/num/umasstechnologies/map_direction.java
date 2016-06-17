@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -18,10 +19,12 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
 
@@ -115,6 +118,7 @@ public class map_direction extends AppCompatActivity implements View.OnClickList
 
         // Getting Google Map
         mGoogleMap = fragment.getMap();
+        mGoogleMap.getUiSettings().setRotateGesturesEnabled(false);
 
         //we need to start the service get the data from the service, get the first gps
         startProgressDialog("Loading vehicle location"); //first time location load.s
@@ -203,32 +207,46 @@ public class map_direction extends AppCompatActivity implements View.OnClickList
         else {
 
         }
-
-
-
     }
 
     private void setMapCurrentLocation(LatLng latlong) {
         CameraUpdate cmf = CameraUpdateFactory.newLatLngZoom(latlong,13);
 
-        MarkerOptions mo = new MarkerOptions();
-        mo.position(latlong);
-        mGoogleMap.addMarker(mo);
+        //MarkerOptions mo = new MarkerOptions();
+        //mo.position(latlong);
+        mGoogleMap.addMarker(new MarkerOptions()
+                .position(latlong)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.parking_icon)));
+        //mGoogleMap.addMarker(mo);
         mGoogleMap.animateCamera(cmf);
     }
 
     private void setMapCurrentRoute(double[] lat, double[] lons) {
-
+        //float f=SphericalUtil.computeHeading();
         int len = lat.length;
 
         PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
-
+        MarkerOptions loc=new MarkerOptions();
         for (int z = 0; z < len; z++) {
-
             LatLng point = new LatLng(lat[z], lons[z]);
             options.add(point);
-        }
+            if(z<len-1&&z!=0) {
+                double f = SphericalUtil.computeHeading(new LatLng(lat[z], lons[z]),new LatLng(lat[z + 1], lons[z + 1]));
+                float s = (float) f;
+                mGoogleMap.addMarker(new MarkerOptions()
+                .position(point)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow_icon))
+                .rotation(s));
+                //loc.position(new LatLng(lat[z], lons[z]));
+                //loc.anchor(0.5f, 0.5f);
+                //loc.rotation(s);
+                //mGoogleMap.addMarker(loc);
+            }else if(z==len-1){
+                mGoogleMap.addMarker(new MarkerOptions()
+                .position(point));
+            }
 
+        }
         mGoogleMap.addPolyline(options);
     }
 

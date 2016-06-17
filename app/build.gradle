@@ -37,4 +37,5 @@ dependencies {
     compile 'com.specyci:residemenu:1.6'
     compile 'com.android.support:design:23.3.0'
     compile 'com.google.code.gson:gson:2.5'
+    compile 'com.google.maps.android:android-maps-utils:0.3.4'
 }

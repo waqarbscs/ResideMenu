@@ -215,8 +215,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        // }else
 
         if (view == itemAlerts){
-
             headerName.setText("Alerts");
+
             changeFragment(new AlertFragment());
 
         }else if (view == itemVehicles){
@@ -236,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (getIntent().getStringExtra("login_status").toString().equals("just_login")) {
                     vehichleFragment.loadItemsFromServer("0", 0);
                 }
+
             }
 
             changeFragment(vehichleFragment);

@@ -50,6 +50,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private String deviceId;
 
     private String tokenGCM;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -59,11 +60,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         TelephonyManager tm = ( TelephonyManager ) getSystemService(Context.TELEPHONY_SERVICE);
         deviceId =  tm.getDeviceId();
 
-
         AppManager.getInstance().setCurrentActivity(this);
-
-
-
 
         btn_login = (AppCompatButton) findViewById(R.id.btn_login);
         txtil_password = (TextInputLayout) findViewById(R.id.til_password);
@@ -204,9 +201,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
                     Log.d("Service","Starting the login service.");
                     this.startService(intent);
-
                 }
-
                 break;
         }
     }

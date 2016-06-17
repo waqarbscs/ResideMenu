@@ -65,7 +65,7 @@ public class IntentLoginService extends IntentService {
             String username = intent.getStringExtra("username");
             String password = intent.getStringExtra("password");
             LoginTheUser(username,password);
-
+            //LoginTheUser("manar1rc","Man123");
         }
     }
 
