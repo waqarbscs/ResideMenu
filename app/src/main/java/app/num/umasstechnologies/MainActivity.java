@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //if we get the token we save it and then we use it when logging in..
                 }
                 else if(intent.getAction().endsWith(GCMRegistrationIntentService.REGISTRATION_ERROR)) {
-                    // Toast.makeText(getApplicationContext(), "GCMTokenError: ", Toast.LENGTH_SHORT).show();
+                     Toast.makeText(getApplicationContext(), "GCMTokenError: ", Toast.LENGTH_SHORT).show();
                 }
             }
         };
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
             }
-
+           // vehichleFragment.loadItemsFromServer("0", 0);
             changeFragment(vehichleFragment);
         }
     }

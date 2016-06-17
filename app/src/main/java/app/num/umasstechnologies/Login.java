@@ -119,6 +119,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         }
                         else {
                             Intent intentMainScreen = new Intent(Login.this, MainActivity.class);
+                            intentMainScreen.putExtra("login_status","just_login");
                             startActivity(intentMainScreen);
                         }
 
