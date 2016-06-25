@@ -5,7 +5,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
     defaultConfig {
-        applicationId 'app.num.umasstechnologies'
+        applicationId 'app.num.MassUAETracking'
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1

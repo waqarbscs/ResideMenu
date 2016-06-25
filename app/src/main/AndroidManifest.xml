@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="app.num.umasstechnologies">
+    package="app.num.MassUAETracking">
 
     <uses-permission android:name="com.example.googlemaps.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <permission
-        android:name="app.num.umasstechnologies.permission.C2D_MESSAGE"
+        android:name="app.num.MassUAETracking.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <uses-permission android:name="app.num.umasstechnologies.permission.C2D_MESSAGE" />
@@ -41,7 +41,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" android:screenOrientation="portrait">
+        <activity android:name="app.num.MassUAETracking.MainActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
@@ -59,7 +59,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".SplashScreen" android:screenOrientation="portrait">
+        <activity android:name="app.num.MassUAETracking.SplashScreen" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -67,7 +67,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Login" android:screenOrientation="portrait" />
+        <activity android:name="app.num.MassUAETracking.Login" android:screenOrientation="portrait" />
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -81,7 +81,7 @@
         </receiver>
 
         <service
-            android:name=".GCMClasses.GCMPushRecieverService"
+            android:name="app.num.MassUAETracking.GCMClasses.GCMPushRecieverService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -90,7 +90,7 @@
 
 
 
-        <service android:name=".GCMClasses.GCMRegistrationIntentService">
+        <service android:name="app.num.MassUAETracking.GCMClasses.GCMRegistrationIntentService">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
@@ -99,19 +99,19 @@
 
 
         <service
-            android:name=".CustomServices.IntentLoginService"
+            android:name="app.num.MassUAETracking.CustomServices.IntentLoginService"
             android:exported="false" />
         <service
-            android:name=".CustomServices.IntentGetTrackerService"
+            android:name="app.num.MassUAETracking.CustomServices.IntentGetTrackerService"
             android:exported="false" />
         <service
-            android:name=".CustomServices.IntentDataLoadService"
+            android:name="app.num.MassUAETracking.CustomServices.IntentDataLoadService"
             android:exported="false" />
 
-        <activity android:name=".map_direction" android:screenOrientation="portrait" />
+        <activity android:name="app.num.MassUAETracking.map_direction" android:screenOrientation="portrait" />
 
         <service
-            android:name=".CustomServices.TrackerLocationLoadService"
+            android:name="app.num.MassUAETracking.CustomServices.TrackerLocationLoadService"
             android:exported="false"></service>
     </application>
 
