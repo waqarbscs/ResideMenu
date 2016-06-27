@@ -1,11 +1,17 @@
 package app.num.MassUAETracking;
 
+import android.*;
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -49,9 +55,22 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkLocationPermission();
+        }
 
         TelephonyManager tm = ( TelephonyManager ) getSystemService(Context.TELEPHONY_SERVICE);
-        deviceId =  tm.getDeviceId();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //User has previously accepted this permission
+            if (ActivityCompat.checkSelfPermission(Login.this,
+                    Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                deviceId =  tm.getDeviceId();
+            }
+        } else {
+            //Not in api-23, no need to prompt
+            deviceId =  tm.getDeviceId();
+        }
+
 
         AppManager.getInstance().setCurrentActivity(this);
 
@@ -134,6 +153,62 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         btn_login.setOnClickListener(this);
 
     }
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(Login.this,
+                Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(Login.this,
+                    Manifest.permission.READ_PHONE_STATE)) {
+
+                // Show an expanation to the user asynchronously -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                //  TODO: Prompt with explanation!
+
+                //Prompt the user once explanation has been shown
+                ActivityCompat.requestPermissions(Login.this,
+                        new String[]{Manifest.permission.READ_PHONE_STATE},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(Login.this,
+                        new String[]{Manifest.permission.READ_PHONE_STATE},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay!
+                    if (ActivityCompat.checkSelfPermission(Login.this,
+                            Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                    }
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(Login.this, "permission denied", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -160,42 +235,88 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
             case R.id.btn_login:
 
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    //User has previously accepted this permission
+                    if (ActivityCompat.checkSelfPermission(Login.this,
+                            Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                        if(progressDialog == null) {
+                            progressDialog = new ProgressDialog(Login.this);
+                        }
 
-                if(progressDialog == null) {
-                    progressDialog = new ProgressDialog(Login.this);
+                        progressDialog.setMessage("logging in.");
+                        progressDialog.setCanceledOnTouchOutside(false);
+                        progressDialog.setCancelable(false);
+                        progressDialog.show();
+
+                        if(AppManager.getInstance().isMyServiceRunning(IntentLoginService.class)) {
+                            return; //don't start it again..
+                        }
+
+                        if(edt_username.getText().toString().equals("")) {
+                            txtil_username.setError("Please Enter Username.");
+                        }
+                        else if(edt_password.getText().toString().equals("")) {
+                            txtil_password.setError("Please Enter Password.");
+                            txtil_username.setError("");
+                        }
+                        else {
+
+                            txtil_password.setError("");
+                            txtil_username.setError("");
+
+                            Intent intent = new Intent(Login.this,IntentLoginService.class);
+
+                            intent.putExtra("username",edt_username.getText().toString());
+                            intent.putExtra("password",edt_password.getText().toString());
+                            intent.putExtra("token",tokenGCM);
+                            intent.putExtra("deviceid",deviceId);
+
+                            Log.d("Service","Starting the login service.");
+                            this.startService(intent);
+                        }
+                    }
+                    else{
+                        checkLocationPermission();
+                    }
+                } else {
+                    //Not in api-23, no need to prompt
+                    if(progressDialog == null) {
+                        progressDialog = new ProgressDialog(Login.this);
+                    }
+
+                    progressDialog.setMessage("logging in.");
+                    progressDialog.setCanceledOnTouchOutside(false);
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
+
+                    if(AppManager.getInstance().isMyServiceRunning(IntentLoginService.class)) {
+                        return; //don't start it again..
+                    }
+
+                    if(edt_username.getText().toString().equals("")) {
+                        txtil_username.setError("Please Enter Username.");
+                    }
+                    else if(edt_password.getText().toString().equals("")) {
+                        txtil_password.setError("Please Enter Password.");
+                        txtil_username.setError("");
+                    }
+                    else {
+
+                        txtil_password.setError("");
+                        txtil_username.setError("");
+
+                        Intent intent = new Intent(Login.this,IntentLoginService.class);
+
+                        intent.putExtra("username",edt_username.getText().toString());
+                        intent.putExtra("password",edt_password.getText().toString());
+                        intent.putExtra("token",tokenGCM);
+                        intent.putExtra("deviceid",deviceId);
+
+                        Log.d("Service","Starting the login service.");
+                        this.startService(intent);
+                    }
                 }
 
-                progressDialog.setMessage("logging in.");
-                progressDialog.setCanceledOnTouchOutside(false);
-                progressDialog.setCancelable(false);
-                progressDialog.show();
-
-                if(AppManager.getInstance().isMyServiceRunning(IntentLoginService.class)) {
-                    return; //don't start it again..
-                }
-
-                if(edt_username.getText().toString().equals("")) {
-                    txtil_username.setError("Please Enter Username.");
-                }
-                else if(edt_password.getText().toString().equals("")) {
-                    txtil_password.setError("Please Enter Password.");
-                    txtil_username.setError("");
-                }
-                else {
-
-                    txtil_password.setError("");
-                    txtil_username.setError("");
-
-                    Intent intent = new Intent(Login.this,IntentLoginService.class);
-
-                    intent.putExtra("username",edt_username.getText().toString());
-                    intent.putExtra("password",edt_password.getText().toString());
-                    intent.putExtra("token",tokenGCM);
-                    intent.putExtra("deviceid",deviceId);
-
-                    Log.d("Service","Starting the login service.");
-                    this.startService(intent);
-                }
                 break;
         }
     }

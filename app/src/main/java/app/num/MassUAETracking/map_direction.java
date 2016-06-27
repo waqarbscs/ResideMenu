@@ -150,18 +150,14 @@ public class map_direction extends AppCompatActivity implements View.OnClickList
                     setMapCurrentLocation(latLng);
                 }
                 else if (intent.getAction().endsWith(TrackerLocationLoadService.ACTION_Success)){
-
                     //well here we will update the map
-
                     double[] lat = intent.getDoubleArrayExtra("latitude");
                     double[] lon = intent.getDoubleArrayExtra("longitude");
 
                     //and here we need to update the map
                     setMapCurrentLocation( new LatLng (lat[0],lon[0] ) );
                     setMapCurrentRoute(lat,lon);
-
                 }
-
             }
         };
         //end of the broeadcast reciever
