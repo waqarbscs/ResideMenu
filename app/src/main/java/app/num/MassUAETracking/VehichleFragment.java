@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import app.num.MassUAETracking.Adapters.lstVehicleAdapter;
@@ -53,7 +55,9 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
 
     private ArrayAdapter<String> spnAdapter;
     private int selectedAdapterItem;
+    Members masjid;
 
+    AutoCompleteTextView actv;
 
     @Nullable
     @Override
@@ -66,6 +70,7 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
 
         listViewVehicles.setOnItemClickListener(this);
         vehicleList = new ArrayList<>();
+        masjid=new Members();
 
         //here is our broadcast listner
 
@@ -106,7 +111,10 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
 
                     String engineStatus = intent.getStringExtra("engine_status");
                     String tracker_id = intent.getStringExtra("tracker_id");
-                    LatLng latLng = new LatLng(intent.getDoubleExtra("lat",0.0),intent.getDoubleExtra("lon",0.0));
+                   // LatLng latLng = new LatLng(intent.getDoubleExtra("lat",0.0),intent.getDoubleExtra("lon",0.0));
+
+                    //waqar changes
+                    LatLng latLng = new LatLng(intent.getDoubleExtra("latitude",0.0),intent.getDoubleExtra("longitude",0.0));
 
                     if(engineStatus.equals("-1")) {
                         Toast.makeText(AppManager.getInstance().getCurrentActivity(), "Could not find tracker information.", Toast.LENGTH_SHORT).show();
@@ -114,6 +122,7 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
                     else {
 
                         Intent intentMap = new Intent(AppManager.getInstance().getCurrentActivity(),map_direction.class);
+
                         intentMap.putExtra("engine_status",engineStatus);
                         intentMap.putExtra("tracker_id",tracker_id);
                         intentMap.putExtra("latitude",latLng.latitude);
@@ -128,9 +137,35 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
 
                         intentMap.putExtra("name",intent.getStringExtra("name"));
                         intentMap.putExtra("mileage",intent.getStringExtra("mileage"));
+                        intentMap.putExtra("mileage_type",intent.getStringExtra("mileage_type"));
                         intentMap.putExtra("speed",intent.getStringExtra("speed"));
 
+                        //changes by waqar
+                        intentMap.putExtra("gps",intent.getStringExtra("gps"));
+                        intentMap.putExtra("gsm",intent.getStringExtra("gsm"));
+                        intentMap.putExtra("battery",intent.getStringExtra("battery"));
+
                         intentMap.putExtra("username",intent.getStringExtra("username"));
+
+                        //Changes
+                        String last_signal=intent.getStringExtra("last_signal");
+                        String last_gprs=intent.getStringExtra("last_gprs");
+                        String tracker_general_color=intent.getStringExtra("tracker_general_color");
+                        String tracker_general_status=intent.getStringExtra("tracker_general_status");
+                        String tracker_icon=intent.getStringExtra("tracker_icon");
+
+                        intentMap.putExtra("tracker_general_status",tracker_general_status);
+                        intentMap.putExtra("tracker_general_color",tracker_general_color);
+                        intentMap.putExtra("last_signal",last_signal);
+                        intentMap.putExtra("last_gprs",last_gprs);
+                        intentMap.putExtra("last_move",intent.getStringExtra("last_move"));
+                        intentMap.putExtra("tracker_icon",tracker_icon);
+
+
+                        //changes by waqar
+
+                        //intentMap.putExtra("username",masjid.username);
+
 
                         intentMap.putExtra("output_bit",intent.getStringExtra("output_bit"));
                         intentMap.putExtra("input_bit_1",intent.getStringExtra("input_bit_1"));
@@ -152,9 +187,11 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
         };
 
 
-        vehicleAdapter = new lstVehicleAdapter(AppManager.getInstance().getCurrentActivity(),vehicleList);
+        vehicleAdapter = new lstVehicleAdapter(AppManager.getInstance().getCurrentActivity(),vehicleList,R.drawable.engon);
 
         listViewVehicles.setAdapter(vehicleAdapter);
+
+
 
         CompanyInfo cInformation = AppManager.getInstance().getCurrentCompany();
 

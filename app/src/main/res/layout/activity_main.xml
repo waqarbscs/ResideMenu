@@ -18,7 +18,7 @@
             <!--android:background="#2ea3fe"/>-->
 
         <FrameLayout
-            android:background="#ff9315"
+            android:background="#fe9225"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
@@ -39,6 +39,15 @@
                 android:textSize="24sp"
                 android:textColor="#fff"
                 android:layout_gravity="center"/>
+            <TextView
+                android:id="@+id/txt_mana"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="7dp"
+                android:text=""
+                android:textSize="15sp"
+                android:textColor="#fff"
+                android:layout_gravity="right" />
 
         </FrameLayout>
 

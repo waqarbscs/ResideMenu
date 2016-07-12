@@ -57,7 +57,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="AIzaSyAIzEWf03AGqeVw1QgkodRzje5Hwv-ip7g" />
 
         <activity android:name="app.num.MassUAETracking.SplashScreen" android:screenOrientation="portrait">
             <intent-filter>
@@ -108,7 +108,10 @@
             android:name="app.num.MassUAETracking.CustomServices.IntentDataLoadService"
             android:exported="false" />
 
-        <activity android:name="app.num.MassUAETracking.map_direction" android:screenOrientation="portrait" />
+        <activity android:name="app.num.MassUAETracking.map_direction"
+            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
 
         <service
             android:name="app.num.MassUAETracking.CustomServices.TrackerLocationLoadService"

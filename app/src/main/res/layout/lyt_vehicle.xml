@@ -3,13 +3,14 @@
     android:orientation="vertical"
     android:weightSum="1.0"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    >
     <LinearLayout
         android:layout_margin="5dp"
         android:padding="5dp"
         android:layout_width="match_parent"
-        android:layout_height="40dp">
+        android:layout_height="40dp"
+        android:orientation="vertical">
 
         <Spinner
             android:id="@+id/spn_member_list"
@@ -17,7 +18,6 @@
             android:layout_height="match_parent">
 
         </Spinner>
-
 
     </LinearLayout>
 
@@ -29,5 +29,7 @@
         android:layout_height="match_parent">
 
     </ListView>
+
+
 
 </LinearLayout>

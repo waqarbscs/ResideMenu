@@ -22,10 +22,12 @@ public class lstVehicleAdapter extends BaseAdapter {
     private List<Vehicle> vehicleList;
     private LayoutInflater inflater;
     private Activity _activity;
+    private int _resId;
 
-    public lstVehicleAdapter(Activity pActivity,List<Vehicle> pVehicleList) {
+    public lstVehicleAdapter(Activity pActivity,List<Vehicle> pVehicleList,int resId) {
         vehicleList = pVehicleList;
         _activity = pActivity;
+        _resId=resId;
     }
 
     @Override
@@ -69,9 +71,17 @@ public class lstVehicleAdapter extends BaseAdapter {
 
         ((TextView) convertView.findViewById(R.id.trackerid)).setText(vehicleList.get(position).id);
 
-        ((ImageView) convertView.findViewById(R.id.imvEngineStatus)).setBackgroundColor((vehicleList.get(position).engineStatus.equals("0")? Color.RED:Color.GREEN));
-        ((ImageView) convertView.findViewById(R.id.imv_iconcolor)).setBackgroundColor( Color.parseColor (vehicleList.get(position).trackerGenColor));
+        //((ImageView) convertView.findViewById(R.id.imvEngineStatus)).setBackgroundColor((vehicleList.get(position).engineStatus.equals("0")? Color.RED:Color.GREEN));
+        //changes
+        //((ImageView) convertView.findViewById(R.id.imvEngineStatus)).setBackgroundColor((vehicleList.get(position).engineStatus.equals("0")? Color.RED:Color.GREEN));
+        ImageView i= ((ImageView) convertView.findViewById(R.id.imvEngineStatus));
+        if((vehicleList.get(position).engineStatus.equals("0")))
+            i.setImageResource(R.drawable.engoff);
+        else
+            i.setImageResource(R.drawable.engon);
 
+        //((ImageView) convertView.findViewById(R.id.imv_iconcolor)).setBackgroundColor( Color.parseColor (vehicleList.get(position).trackerGenColor));
+        ((ImageView) convertView.findViewById(R.id.imv_iconcolor)).setBackgroundResource(_resId);
         return convertView;
     }
 }

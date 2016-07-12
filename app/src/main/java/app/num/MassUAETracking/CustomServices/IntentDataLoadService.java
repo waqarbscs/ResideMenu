@@ -2,6 +2,7 @@ package app.num.MassUAETracking.CustomServices;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -50,7 +51,7 @@ public class IntentDataLoadService extends IntentService {
     public static final String Action_Email_Sent_Successfully = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.EmailSent.Success";
     public static final String Action_Email_Sent_Error = "app.num.umasstechnologies.CustomServices.IntentDataLoadService.EmailSent.Error";
 
-
+    private String UserName;
     private static final String Tag = "IntentDataLoadService";
 
     public IntentDataLoadService() {
@@ -109,9 +110,26 @@ public class IntentDataLoadService extends IntentService {
                         intentEStatus.putExtra("last_engine_on",String.valueOf(jsonObject.getString("last_engine_on")));
                         intentEStatus.putExtra("last_engine_off",String.valueOf(jsonObject.getString("last_engine_off")));
 
-                        intentEStatus.putExtra("device_id",String.valueOf(jsonObject.getString("id")));
+                        //intentEStatus.putExtra("device_id",String.valueOf(jsonObject.getString("id")));
+                        intentEStatus.putExtra("device_id",String.valueOf(jsonObject.getString("device_id")));
                         intentEStatus.putExtra("name",String.valueOf(jsonObject.getString("tracker_name")));
                         intentEStatus.putExtra("mileage",String.valueOf(jsonObject.getString("tracker_mileage_total")));
+                        intentEStatus.putExtra("mileage_type",String.valueOf(jsonObject.getString("tracker_mileage_type")));
+                        intentEStatus.putExtra("username",String.valueOf(jsonObject.getString("user_name")));
+
+
+                        //Changes by waqar
+                        intentEStatus.putExtra("gps",String.valueOf(jsonObject.getString("gps_signal_level")));
+                        intentEStatus.putExtra("gsm",String.valueOf(jsonObject.getString("gsm_signal_level")));
+                        intentEStatus.putExtra("battery",String.valueOf(jsonObject.getString("voltage_charge_value")));
+
+                        intentEStatus.putExtra("tracker_general_status",String.valueOf(jsonObject.getString("tracker_general_status")));
+                        intentEStatus.putExtra("tracker_general_color",String.valueOf(jsonObject.getString("tracker_general_color")));
+                        intentEStatus.putExtra("last_signal",String.valueOf(jsonObject.getString("last_signal")));
+                        intentEStatus.putExtra("last_gprs",String.valueOf(jsonObject.getString("last_gprs")));
+                        intentEStatus.putExtra("last_move",String.valueOf(jsonObject.getString("last_move")));
+                        intentEStatus.putExtra("tracker_icon",String.valueOf(jsonObject.getString("tracker_icon")));
+
 
                         String[] inputOutput = jsonObject.getString("inputs_outputs").split("|");
 
@@ -218,7 +236,11 @@ public class IntentDataLoadService extends IntentService {
                                 vehicle.trackerGenColor = tempObject.getString("tracker_general_color");
                                 vehicle.trackerName = tempObject.getString("tracker_name");
                                 vehicle.engineStatus = tempObject.getString("engine_status");
-
+                                vehicle.trackerGenStatus=tempObject.getString("tracker_general_status");
+                                vehicle.last_status=tempObject.getString("last_signal");
+                                vehicle.last_gprs=tempObject.getString("last_gprs");
+                                vehicle.last_move=tempObject.getString("last_move");
+                                vehicle.tracker_icon=tempObject.getString("tracker_icon");
 
                                 db.addTracker(vehicle);
                             }
@@ -237,7 +259,6 @@ public class IntentDataLoadService extends IntentService {
                             members.id = tempObject.getString("id");
                             members.username = tempObject.getString("user_name");
                             members.name = tempObject.getString("name");
-
                             db.addMember(members);
 
                         }

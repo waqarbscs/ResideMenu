@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -37,7 +38,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ResideMenuItem itemAlerts;
     private ResideMenuItem itemLogout;
 
-    private TextView headerName;
+    String mana="";
+
+    private TextView headerName,txt_mana;
 
     private user currentUser = null;
 
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AppManager.getInstance().setCurrentActivity(this);
 
         headerName = (TextView) findViewById(R.id.txtvHeaderName);
+        txt_mana = (TextView) findViewById(R.id.txt_mana);
 
         headerName.setText("Vehicle");
 
@@ -103,7 +107,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(this,GCMRegistrationIntentService.class);
             startService(intent);
         }
+        mana=getIntent().getStringExtra("mana");
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        if(mana!=null)
+        editor.putString("key1",mana);
+        editor.commit();
 
+        SharedPreferences sharedPref1 = getPreferences(Context.MODE_PRIVATE);
+        String f=sharedPref1.getString("key1","");
+        txt_mana.setText(f);
+        //Toast.makeText(MainActivity.this, ""+mana, Toast.LENGTH_SHORT).show();
 
         setUpMenu();
         if( savedInstanceState == null ) {
@@ -130,20 +144,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // attach to current activity;
         resideMenu = new ResideMenu(this);
 
-        resideMenu.setBackground(R.drawable.background);
+        resideMenu.setBackground(R.drawable.a);
         resideMenu.attachToActivity(this);
         resideMenu.setMenuListener(menuListener);
         //valid scale factor is between 0.0f and 1.0f. leftmenu'width is 150dip.
-        resideMenu.setScaleValue(0.5f);
+        resideMenu.setScaleValue(0.6f);
         resideMenu.setShadowVisible(false); //we dont want shadow
         resideMenu.setSwipeDirectionDisable(ResideMenu.DIRECTION_RIGHT); //we dont want it to work with right blah blah
 
 
-        itemVehicles  = new ResideMenuItem(this, R.drawable.icon_profile,  "Vehicles");
+        itemVehicles  = new ResideMenuItem(this, R.drawable.vehicle,  "Vehicles");
 
-        itemAlerts = new ResideMenuItem(this, R.drawable.icon_calendar, "Alerts");
-        itemFeedback = new ResideMenuItem(this, R.drawable.icon_settings, "Feedback");
-        itemLogout = new ResideMenuItem(this,R.drawable.icon_home, "Logout");
+        itemAlerts = new ResideMenuItem(this, R.drawable.alert, "Alerts");
+        itemFeedback = new ResideMenuItem(this, R.drawable.feeback, "Feedback");
+        itemLogout = new ResideMenuItem(this,R.drawable.icon_settings, "Logout");
 
 
         //get data from shared preference

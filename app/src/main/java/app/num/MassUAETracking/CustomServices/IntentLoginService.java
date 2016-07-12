@@ -19,6 +19,7 @@ import java.util.List;
 
 import app.num.MassUAETracking.DatabaseClasses.DatabaseHandler;
 import app.num.MassUAETracking.Models.CompanyInfo;
+import app.num.MassUAETracking.Models.Members;
 import app.num.MassUAETracking.Models.user;
 import app.num.MassUAETracking.Singleton.AppManager;
 
@@ -54,6 +55,7 @@ public class IntentLoginService extends IntentService {
             String deviceid = intent.getStringExtra("deviceid");
             String username = intent.getStringExtra("username");
             String password = intent.getStringExtra("password");
+
             LoginTheUser(username,password);
             //LoginTheUser("manar1rc","Man123");
         }

@@ -28,6 +28,10 @@ public class TrackerData implements Parcelable {
     public String last_move;
     public String last_signal;
 
+    public String gps;
+    public String gsm;
+    public String battery;
+
     public TrackerData() {
         SetInitialValues();
     }
@@ -58,6 +62,10 @@ public class TrackerData implements Parcelable {
         last_move = "NA";
         last_signal = "NA";
 
+        gps="NA";
+        gsm="NA";
+        battery="NA";
+
     }
 
     protected TrackerData(Parcel in) {
@@ -82,6 +90,10 @@ public class TrackerData implements Parcelable {
         last_location = in.readString();
         last_move = in.readString();
         last_signal = in.readString();
+
+        gps=in.readString();
+        gsm=in.readString();
+        battery=in.readString();
     }
 
     public static final Creator<TrackerData> CREATOR = new Creator<TrackerData>() {
@@ -126,6 +138,10 @@ public class TrackerData implements Parcelable {
         dest.writeString(last_location );
         dest.writeString(last_move );
         dest.writeString(last_signal );
+
+        dest.writeString(gps);
+        dest.writeString(gsm);
+        dest.writeString(battery);
 
     }
 }

@@ -61,7 +61,7 @@ public class TrackerDetailDialog {
         txt_mileage.setText(tData.mileage);
 
         TextView txt_username = (TextView) dialog.findViewById(R.id.txt_username);
-        txt_username.setText(tData.mileage);
+        txt_username.setText(tData.username);
 
         TextView txt_speed = (TextView) dialog.findViewById(R.id.txt_speed);
         txt_speed.setText(tData.speed);
@@ -80,6 +80,17 @@ public class TrackerDetailDialog {
 
         TextView txt_last_signal = (TextView) dialog.findViewById(R.id.txt_last_signal);
         txt_last_signal.setText(tData.last_signal);
+
+        TextView txt_gps=(TextView)dialog.findViewById(R.id.txt_gps);
+        txt_gps.setText(tData.gps);
+
+
+        TextView txt_gsm=(TextView)dialog.findViewById(R.id.txt_gsm);
+        txt_gsm.setText(tData.gsm);
+
+
+        TextView txt_battery=(TextView)dialog.findViewById(R.id.txt_battery);
+        txt_battery.setText(tData.battery);
 
         Button dialogButton = (Button) dialog.findViewById(R.id.btn_ok);
         dialogButton.setOnClickListener(new View.OnClickListener() {
