@@ -3,37 +3,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="app.num.MassUAETracking.Login">
+    tools:context="app.num.MassUAETracking.Login"
+    android:background="#1a237e">
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#fff"
         android:fitsSystemWindows="true">
-
 
         <LinearLayout
 
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-           >
-
+            android:background="#33ffffff">
+        <!--
             <LinearLayout
                 android:background="@color/darkOrange"
                 android:layout_width="match_parent"
                 android:layout_height="40dp">
 
             </LinearLayout>
-
+            -->
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="100dp"
                 android:paddingRight="30dp"
                 android:paddingLeft="30dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
 
 
             <ImageView android:src="@drawable/login_logo"
@@ -43,45 +41,56 @@
                 android:layout_gravity="center_horizontal" />
 
             <!-- Email Label -->
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
 
-                <EditText android:id="@+id/input_username"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:hint="Username" />
-            </android.support.design.widget.TextInputLayout>
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@android:color/transparent">
+
+                        <EditText android:id="@+id/input_username"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text"
+                            android:hint="Username"
+                            android:drawableRight="@drawable/account" />
+
+                    </android.support.design.widget.TextInputLayout>
 
             <!-- Password Label -->
-            <android.support.design.widget.TextInputLayout
+
+                <android.support.design.widget.TextInputLayout
                 android:id="@+id/til_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="8dp"
+                    android:background="@android:color/transparent">
+                    <EditText android:id="@+id/input_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:hint="Password"
+                        android:drawableRight="@drawable/lock" />
 
-                <EditText android:id="@+id/input_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:hint="Password"/>
+                </android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
 
-            <android.support.v7.widget.AppCompatButton
+
+                <android.support.v7.widget.AppCompatButton
 
                 android:id="@+id/btn_login"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
                 android:padding="12dp"
-                android:text="Login"/>
-
+                android:text="Login"
+                android:textSize="25sp"
+                android:drawableRight="@drawable/logini_icon"
+                android:background="#ff9800"
+                android:textColor="#ffffff" />
 
             </LinearLayout>
 

@@ -11,13 +11,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
             <ImageView
                 android:id="@+id/imv_iconcolor"
                 android:layout_alignParentLeft="true"
                 android:layout_height="50dp"
                 android:layout_width="40dp" />
-
 
         <RelativeLayout
             android:layout_marginLeft="10dp"
@@ -99,8 +97,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="5dp"
                 android:id="@+id/imvEngineStatus"
-                android:layout_width="60dp"
-                android:layout_height="60dp" />
+                android:layout_width="30dp"
+                android:layout_height="30dp" />
 
             <TextView
                 android:id="@+id/trackerid"
@@ -108,8 +106,6 @@
                 android:text=""
                 android:layout_width="0dp"
                 android:layout_height="0dp" />
-
-
 
         </RelativeLayout>
 

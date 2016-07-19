@@ -7,7 +7,9 @@
     tools:context="app.num.MassUAETracking.map_direction">
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="true">
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -15,55 +17,104 @@
         android:layout_height="match_parent" />
 
 
-    <Button
-        android:layout_width="30dp"
-        android:layout_height="wrap_content"
-        android:text="Satellite"
-        android:id="@+id/button"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#fe9225"
+            android:background="#f57c00"
             android:orientation="horizontal"
             android:weightSum="3"
             android:layout_gravity="bottom">
-            <Button
-                android:id="@+id/btnVehicle"
-                android:text="vehicle"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="#fe9225"
-                android:layout_weight="1"/>
-            <Button
-                android:id="@+id/btnAlert"
-                android:text="Alert"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/vehicle"
+                    android:layout_gravity="center"/>
+                <Button
+                    android:id="@+id/btnVehicle"
+                    android:text="vehicle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#f57c00"
+                    android:textColor="#ffffff"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="#fe9225"
-                android:layout_weight="1"/>
-            <Button
-                android:id="@+id/btnLogOut"
-                android:text="LogOut"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/alert"
+                    android:layout_gravity="center"/>
+                <Button
+                    android:id="@+id/btnAlert"
+                    android:text="Alert"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#f57c00"
+                    android:textColor="#ffffff"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="#fe9225"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/icon_settings"
+                    android:layout_gravity="center"/>
+                <Button
+                    android:id="@+id/btnLogOut"
+                    android:text="LogOut"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#f57c00"
+                   android:textColor="#ffffff"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
         </LinearLayout>
 
-        <Button
-            android:layout_width="30dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Normal"
-            android:id="@+id/button2"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="right|top" />
-    </FrameLayout>
+            android:background="@android:color/transparent"
+            android:layout_gravity="right|top"
+            android:layout_margin="10dp">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="MAP"
+                android:id="@+id/button2"
+                android:background="#ffffff"
+                android:textSize="15dp"
+                style="?android:attr/buttonStyleSmall"
+                android:focusableInTouchMode="true" />
 
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="SATELLITE "
+                android:id="@+id/button"
+                android:background="#ffffff"
+                android:textSize="15dp"
+                android:focusableInTouchMode="true" />
+        </LinearLayout>
+
+
+
+    </FrameLayout>
 
 </RelativeLayout>

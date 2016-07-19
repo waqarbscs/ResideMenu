@@ -47,6 +47,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String tbltracker_id = "id";
     private static final String tbltracker_engineStatus = "engineStatus";
     private static final String tbltracker_name = "name";
+    private static final String tbltracker_trackerGenStatus = "trackerGenStatus";
+    private static final String tbltracker_last_move = "last_move";
+    private static final String tbltracker_last_status = "last_status";
+    private static final String tbltracker_last_gprs = "last_gprs";
+    private static final String tbltracker_tracker_icon = "tracker_icon";
+
 
     public DatabaseHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -59,10 +65,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 +tblmember_name+" TEXT, "+tblmember_username+" TEXT )";
 
         db.execSQL(CREATE_MEMBER_TABLE);
-
+/*
         String CREATE_TRACKER_TABLE = " CREATE TABLE "+TABLE_TRACKER + "( "+tbltracker_id+" TEXT, "+
                 tbltracker_name+" TEXT, "+tbltracker_color+" TEXT, "+tbltracker_deviceid+" TEXT, "+
                 tbltracker_engineStatus+" TEXT )";
+*/
+        String CREATE_TRACKER_TABLE = " CREATE TABLE "+TABLE_TRACKER + "( "+tbltracker_id+" TEXT, "+
+                tbltracker_name+" TEXT, "+tbltracker_color+" TEXT, "+tbltracker_deviceid+" TEXT, "+
+                tbltracker_engineStatus+" TEXT, "+  tbltracker_last_move+" TEXT, "+tbltracker_last_status+
+                " TEXT, "+tbltracker_last_gprs+" TEXT, "+tbltracker_trackerGenStatus+" TEXT, "+
+                tbltracker_tracker_icon+" TEXT)";
 
         db.execSQL(CREATE_TRACKER_TABLE);
 
@@ -132,6 +144,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(tbltracker_engineStatus, pVehicle.engineStatus); // Contact Phone
         values.put(tbltracker_id,pVehicle.id);
         values.put(tbltracker_name,pVehicle.trackerName);
+        values.put(tbltracker_last_gprs,pVehicle.last_gprs);
+        values.put(tbltracker_last_move,pVehicle.last_move);
+        values.put(tbltracker_last_status,pVehicle.last_status);
+        values.put(tbltracker_trackerGenStatus,pVehicle.trackerGenStatus);
+        values.put(tbltracker_tracker_icon,pVehicle.tracker_icon);
+
 
         // Inserting Row
         db.insert(TABLE_TRACKER, null, values);
@@ -213,9 +231,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String[] args = {};
+        /*
         Cursor cursor = db.rawQuery("select "+tbltracker_id+", "+tbltracker_deviceid+", "+tbltracker_name+", "
                 +tbltracker_engineStatus+", "+tbltracker_color+" from "+TABLE_TRACKER, args);
-
+*/
+        Cursor cursor = db.rawQuery("select "+tbltracker_id+", "+tbltracker_deviceid+", "+tbltracker_name+", "
+                +tbltracker_engineStatus+", "+tbltracker_color+","+tbltracker_last_move+","+tbltracker_last_status+
+                ","+tbltracker_last_gprs+","+tbltracker_trackerGenStatus+","+tbltracker_tracker_icon+
+                " from "+TABLE_TRACKER, args);
         if (cursor != null)
             cursor.moveToFirst();
         else
@@ -226,7 +249,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         while (index < len) {
             cursor.moveToPosition(index);
-            Vehicle tempV = new Vehicle(cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4));
+            Vehicle tempV = new Vehicle(cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4)
+            ,cursor.getString(5),cursor.getString(6),cursor.getString(7),cursor.getString(8),cursor.getString(9));
             tempV.id = cursor.getString(0);
             listTrackers.add(tempV);
             index++;

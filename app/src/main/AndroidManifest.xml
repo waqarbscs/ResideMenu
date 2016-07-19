@@ -41,7 +41,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="app.num.MassUAETracking.MainActivity" android:screenOrientation="portrait">
+        <activity android:name="app.num.MassUAETracking.MainActivity" android:screenOrientation="portrait"
+            android:theme="@style/abc">
             <intent-filter>
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
@@ -59,7 +60,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAIzEWf03AGqeVw1QgkodRzje5Hwv-ip7g" />
 
-        <activity android:name="app.num.MassUAETracking.SplashScreen" android:screenOrientation="portrait">
+        <activity android:name="app.num.MassUAETracking.SplashScreen" android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -67,7 +69,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="app.num.MassUAETracking.Login" android:screenOrientation="portrait" />
+        <activity android:name="app.num.MassUAETracking.Login" android:screenOrientation="portrait"
+            android:theme="@style/login"/>
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -109,7 +112,7 @@
             android:exported="false" />
 
         <activity android:name="app.num.MassUAETracking.map_direction"
-            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar"
+            android:theme="@style/Fragment"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait" />
 

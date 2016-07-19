@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -28,8 +29,6 @@ import app.num.MassUAETracking.Singleton.AppManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, IFragmentEvents{
 
-
-
     private ResideMenu resideMenu;
     private Context mContext;
 
@@ -43,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView headerName,txt_mana;
 
     private user currentUser = null;
-
 
     @Override
     public void onBackPressed() {
@@ -62,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         AppManager.getInstance().setCurrentActivity(this);
 
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //if we get the token we save it and then we use it when logging in..
                 }
                 else if(intent.getAction().endsWith(GCMRegistrationIntentService.REGISTRATION_ERROR)) {
-                     Toast.makeText(getApplicationContext(), "GCMTokenError: ", Toast.LENGTH_SHORT).show();
+                     //Toast.makeText(getApplicationContext(), "GCMTokenError: ", Toast.LENGTH_SHORT).show();
                 }
             }
         };
@@ -135,6 +135,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
            // vehichleFragment.loadItemsFromServer("0", 0);
+            SharedPreferences sharedPref4 = getSharedPreferences("abc",Context.MODE_PRIVATE);
+
+            String s=sharedPref4.getString("alert","");
+            if(s=="yes")
+                changeFragment(new AlertFragment());
             changeFragment(vehichleFragment);
         }
     }
@@ -144,11 +149,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // attach to current activity;
         resideMenu = new ResideMenu(this);
 
-        resideMenu.setBackground(R.drawable.a);
+        resideMenu.setBackground(R.drawable.back);
         resideMenu.attachToActivity(this);
         resideMenu.setMenuListener(menuListener);
         //valid scale factor is between 0.0f and 1.0f. leftmenu'width is 150dip.
-        resideMenu.setScaleValue(0.6f);
+        resideMenu.setScaleValue(0.5f);
         resideMenu.setShadowVisible(false); //we dont want shadow
         resideMenu.setSwipeDirectionDisable(ResideMenu.DIRECTION_RIGHT); //we dont want it to work with right blah blah
 
@@ -159,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         itemFeedback = new ResideMenuItem(this, R.drawable.feeback, "Feedback");
         itemLogout = new ResideMenuItem(this,R.drawable.icon_settings, "Logout");
 
-
+        itemVehicles.setMinimumWidth(40);
         //get data from shared preference
 
 
@@ -315,5 +320,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Logout();
         }
     }
+
+
 }
 

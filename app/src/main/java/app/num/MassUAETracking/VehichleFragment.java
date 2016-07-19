@@ -187,7 +187,7 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
         };
 
 
-        vehicleAdapter = new lstVehicleAdapter(AppManager.getInstance().getCurrentActivity(),vehicleList,R.drawable.engon);
+        vehicleAdapter = new lstVehicleAdapter(AppManager.getInstance().getCurrentActivity(),vehicleList);
 
         listViewVehicles.setAdapter(vehicleAdapter);
 
@@ -283,7 +283,7 @@ public class VehichleFragment extends Fragment implements Spinner.OnItemSelected
         if(vList == null)
             return false;
 
-        vehicleList.addAll(vList);
+         vehicleList.addAll(vList);
 
         vehicleAdapter.notifyDataSetChanged();
 

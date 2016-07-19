@@ -1,14 +1,21 @@
 package app.num.MassUAETracking;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +61,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         edt_contact = (EditText) inflatedView.findViewById(R.id.input_contactnumber);
         edt_email = (EditText) inflatedView.findViewById(R.id.input_email);
 
+
+
+        edt_comment.setTextColor(Color.BLACK);
+        edt_name.setTextColor(Color.BLACK);
+        edt_contact.setTextColor(Color.BLACK);
+        edt_email.setTextColor(Color.BLACK);
+
         mBroadCastReciver = new BroadcastReceiver() {
 
             @Override
@@ -65,8 +79,31 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                 String message = intent.getStringExtra("message");
 
                 if(intent.getAction().endsWith(IntentDataLoadService.Action_Email_Sent_Error)) {
+                    final AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
+                    } else {
+                        builder = new AlertDialog.Builder(getActivity());
+                    }
+                    //A lertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    //builder.setTitle("Location Services Not Active");
+                    builder.setMessage("Email send failed check your interent connection.");
+                    builder.setTitle("Alert !");
+                    builder.setIcon(android.R.drawable.ic_dialog_alert);
+                    builder.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            // The neutral button was clicked
+                            arg0.dismiss();
+                        }
+                    });
+
+                    Dialog alertDialog = builder.create();
+                    alertDialog.setCanceledOnTouchOutside(false);
+                    alertDialog.show();
+                    /*
                     ViewDialog viewDialog = new ViewDialog();
                     viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),"Email send failed check your interent connection.");
+                    */
                 }
                 else if (intent.getAction().endsWith(IntentDataLoadService.Action_Email_Sent_Successfully) ) {
 
@@ -74,13 +111,56 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                     edt_contact.setText("");
                     edt_email.setText("");
                     edt_name.setText("");
+                    final AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
+                    } else {
+                        builder = new AlertDialog.Builder(getActivity());
+                    }
+                    //A lertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    //builder.setTitle("Location Services Not Active");
+                    builder.setMessage("Email Send Successfull");
+                    builder.setTitle("Alert !");
+                    builder.setIcon(android.R.drawable.ic_dialog_alert);
+                    builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            // The neutral button was clicked
+                        }
+                    });
 
+                    Dialog alertDialog = builder.create();
+                    alertDialog.setCanceledOnTouchOutside(false);
+                    alertDialog.show();
+                    /*
                     ViewDialog viewDialog = new ViewDialog();
                     viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),"Email Send Successfull");
+                    */
                 }
                 else if (intent.getAction().endsWith(IntentDataLoadService.Action_Error)) {
+                    final AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
+                    } else {
+                        builder = new AlertDialog.Builder(getActivity());
+                    }
+                    //A lertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    //builder.setTitle("Location Services Not Active");
+                    builder.setMessage("Failed, Check your internet connection.");
+                    builder.setTitle("Alert !");
+                    builder.setIcon(android.R.drawable.ic_dialog_alert);
+                    builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            // The neutral button was clicked
+                        }
+                    });
+
+                    Dialog alertDialog = builder.create();
+                    alertDialog.setCanceledOnTouchOutside(false);
+                    alertDialog.show();
+                    /*
                     ViewDialog viewDialog = new ViewDialog();
                     viewDialog.showDialog(AppManager.getInstance().getCurrentActivity(),"Failed, Check your internet connection.");
+                    */
                 }
 
             }

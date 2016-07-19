@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.LocalBroadcastManager;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -33,6 +35,7 @@ import com.google.maps.android.SphericalUtil;
 import java.util.Calendar;
 
 import app.num.MassUAETracking.CustomDialogs.TrackerDetailDialog;
+import app.num.MassUAETracking.CustomDialogs.ViewDialog;
 import app.num.MassUAETracking.CustomServices.IntentDataLoadService;
 import app.num.MassUAETracking.CustomServices.TrackerLocationLoadService;
 import app.num.MassUAETracking.DatabaseClasses.DatabaseHandler;
@@ -49,28 +52,26 @@ public class map_direction extends AppCompatActivity  {
     int resid;
     private BroadcastReceiver mBroadCastReciever;
 
-
     private ProgressDialog progressDialog;
     LatLng latLng;
-
 
     TrackerData tData;
 
     Button sat,nor;
     Button btnVehicle,btnAlert,btnLogOut;
 
-    private static final int Data_Fetch_TimeLimit = 10; //after every x second fetch the data
+    private static final int Data_Fetch_TimeLimit = 30; //after every x second fetch the data
     private static final int MS = 1000; //multiplied to make it seconds.
 
-
     private Handler handler;
+
+
+    public String unit;
 
     private Runnable mRunnableServerTask = new Runnable() {
         @Override
         public void run() {
-
             StartServiceForNewDetails();
-
             if(handler != null)
                 handler.postDelayed(mRunnableServerTask,MS*Data_Fetch_TimeLimit);
         }
@@ -83,8 +84,9 @@ public class map_direction extends AppCompatActivity  {
         setContentView(R.layout.activity_map_direction);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setBackgroundDrawable(
+                new ColorDrawable(Color.parseColor("#f4801f")));
         setTitle("Map");
-
 
         handler = new Handler();
 
@@ -119,13 +121,19 @@ public class map_direction extends AppCompatActivity  {
                     startActivity(intentLoginScreen);
             }
         });
+
         btnAlert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences sharedPref4 = getSharedPreferences("abc",Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("alert","yes");
+                editor.commit();
                 Intent i=new Intent(map_direction.this,MainActivity.class);
                 startActivity(i);
             }
         });
+
         tracker_id = mainIntent.getStringExtra("tracker_id");
         engineStatus = mainIntent.getStringExtra("engine_status");
         latLng = new LatLng(mainIntent.getDoubleExtra("latitude",0.0),getIntent().getDoubleExtra("longitude",0.0));
@@ -146,17 +154,17 @@ public class map_direction extends AppCompatActivity  {
 
         tData.username = mainIntent.getStringExtra("username");
 
-
         //changes by waqar
 
         String m_type=mainIntent.getStringExtra("mileage_type");
         int ty=Integer.parseInt(m_type);
-        String unit="";
+        unit="";
         if(ty==0){
             unit="KM";
         }else if(ty==1){
             unit="Mile";
         }
+
         tData.mileage = mainIntent.getStringExtra("mileage")+unit;
         tData.speed = mainIntent.getStringExtra("speed")+unit;
 
@@ -179,12 +187,16 @@ public class map_direction extends AppCompatActivity  {
 
 
         double gps_level=0,gsm_level=0,battery_power=0;
-        if(gps.equals("a")||gps.equals("b")||gps.equals("c")||gps.equals("c")){
+        if(gps.equals("none")){
+
+        }else  if(gps.equals("a")||gps.equals("b")||gps.equals("c")||gps.equals("d")){
             gps_level = 100.0;
         }else if (Integer.parseInt(gps) >=0 && Integer.parseInt(gps)<=9){
             gps_level = Integer.parseInt(gps)*10;
         }
-        if(gsm.equals("a")||gsm.equals("b")||gsm.equals("c")||gsm.equals("d")){
+        if(gsm.equals("none")){
+
+        }else  if(gsm.equals("a")||gsm.equals("b")||gsm.equals("c")||gsm.equals("d")){
             gsm_level = 100.0;
         }else if (Integer.parseInt(gsm) >=0 && Integer.parseInt(gsm)<=9){
             gsm_level = Integer.parseInt(gsm)*10;
@@ -193,15 +205,15 @@ public class map_direction extends AppCompatActivity  {
             battery_power=9.0;
         }else if(battery.equals("F")){
             battery_power=100.0;
-        }else if(Integer.parseInt(battery)>=0&&Integer.parseInt(battery)<=9.0){
+        }else if(Double.parseDouble(battery)>=0&&Double.parseDouble(battery)<=9.0){
             battery_power=battery_power*10;
         }else if(battery.equals("-")){
             battery_power=0.0;
         }
 
-        tData.gps=Double.toString(gps_level)+"%";
-        tData.gsm=Double.toString(gsm_level)+"%";
-        tData.battery=Double.toString(battery_power)+"%";
+        tData.gps=Double.toString(gps_level);
+        tData.gsm=Double.toString(gsm_level);
+        tData.battery=Double.toString(battery_power);
 
         Calendar cal=Calendar.getInstance();
         int currYear=cal.get(Calendar.YEAR);
@@ -232,385 +244,526 @@ public class map_direction extends AppCompatActivity  {
         int last_gprs_hours=curr_hour-gprs_hour;
 
         String tracker_icon_color = "gray";
-        resid=R.drawable.engon;
+        resid=R.mipmap.ic_launcher;
         if(tracker_icon==0) {
             if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
             {
-                tracker_icon_color = "gray";
+                //tracker_icon_color = "gray";
+                resid=R.drawable.car_grey;
             }
 
             else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
             {
-
+                resid=R.drawable.car_pink;
                 tracker_icon_color = "pink";
             }
             else
             {
-                if (tracker_general_color == "#FF6600" || tracker_general_status == "archive") { // orange
-
-                    tracker_icon_color = "orange";
-                } else if (tracker_general_color == "#996600" || tracker_general_status == "cancel") { // brown
-
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.car_orange;
+                    //tracker_icon_color = "orange";
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.car_brown;
                     tracker_icon_color = "brown";
-                } else if (tracker_general_color == "#FFFF00" || tracker_general_status == "stop") { // yellow
-
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.car_yellow;
                     tracker_icon_color = "yellow";
-                } else if (tracker_general_color == "#660000" || tracker_general_status == "lost") { // reddark
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.car_reddark;
                     tracker_icon_color = " reddark ";
-                } else if (engineStatus == "0" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // red
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.car_red;
                     tracker_icon_color = "red";
-                } else if (engineStatus == "1" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // green
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // green
+                    resid=R.drawable.car_green;
                     tracker_icon_color = "green";
-                } else if (engineStatus == "0" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // bluelight
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.car_sky;
                     tracker_icon_color = " bluelight ";
-                } else if (engineStatus == "1" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // blue
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.car_blue;
                     tracker_icon_color = "blue";
                 }
             }
         }else if(tracker_icon==1){
             if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
             {
-                tracker_icon_color = "gray";
+                //tracker_icon_color = "gray";
+                resid=R.drawable.map_grey;
             }
 
             else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
             {
-
+                resid=R.drawable.map_pink;
                 tracker_icon_color = "pink";
             }
             else
             {
-                if (tracker_general_color == "#FF6600" || tracker_general_status == "archive") { // orange
-
-                    tracker_icon_color = "orange";
-                } else if (tracker_general_color == "#996600" || tracker_general_status == "cancel") { // brown
-
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.map_orange;
+                    //tracker_icon_color = "orange";
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.map_brown;
                     tracker_icon_color = "brown";
-                } else if (tracker_general_color == "#FFFF00" || tracker_general_status == "stop") { // yellow
-
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.map_yellow;
                     tracker_icon_color = "yellow";
-                } else if (tracker_general_color == "#660000" || tracker_general_status == "lost") { // reddark
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.map_reddark;
                     tracker_icon_color = " reddark ";
-                } else if (engineStatus == "0" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // red
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.map_red;
                     tracker_icon_color = "red";
-                } else if (engineStatus == "1" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // green
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // green
+                    resid=R.drawable.map_green;
                     tracker_icon_color = "green";
-                } else if (engineStatus == "0" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // bluelight
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.map_sky;
                     tracker_icon_color = " bluelight ";
-                } else if (engineStatus == "1" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // blue
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.map_blue;
                     tracker_icon_color = "blue";
                 }
             }
         }else if(tracker_icon==2){
             if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
             {
+                resid=R.drawable.male_grey;
                 tracker_icon_color = "gray";
             }
 
             else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
             {
-
+                resid=R.drawable.male_pink;
                 tracker_icon_color = "pink";
             }
             else
             {
-                if (tracker_general_color == "#FF6600" || tracker_general_status == "archive") { // orange
-
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.male_orange;
                     tracker_icon_color = "orange";
-                } else if (tracker_general_color == "#996600" || tracker_general_status == "cancel") { // brown
-
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.male_brown;
                     tracker_icon_color = "brown";
-                } else if (tracker_general_color == "#FFFF00" || tracker_general_status == "stop") { // yellow
-
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.male_yellow;
                     tracker_icon_color = "yellow";
-                } else if (tracker_general_color == "#660000" || tracker_general_status == "lost") { // reddark
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.male_reddark;
                     tracker_icon_color = " reddark ";
-                } else if (engineStatus == "0" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // red
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.male_red;
                     tracker_icon_color = "red";
-                } else if (engineStatus == "1" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // green
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900")|| tracker_general_status == "inside")) { // green
+                    resid=R.drawable.male_green;
                     tracker_icon_color = "green";
-                } else if (engineStatus == "0" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // bluelight
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.male_sky;
                     tracker_icon_color = " bluelight ";
-                } else if (engineStatus == "1" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // blue
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.male_blue;
                     tracker_icon_color = "blue";
                 }
             }
         }else if(tracker_icon==3){
             if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
             {
+                resid=R.drawable.female_grey;
                 tracker_icon_color = "gray";
             }
 
             else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
             {
-
+                resid=R.drawable.female_pink;
                 tracker_icon_color = "pink";
             }
             else
             {
-                if (tracker_general_color == "#FF6600" || tracker_general_status == "archive") { // orange
-
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.female_orange;
                     tracker_icon_color = "orange";
-                } else if (tracker_general_color == "#996600" || tracker_general_status == "cancel") { // brown
-
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.female_brown;
                     tracker_icon_color = "brown";
-                } else if (tracker_general_color == "#FFFF00" || tracker_general_status == "stop") { // yellow
-
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.female_yellow;
                     tracker_icon_color = "yellow";
-                } else if (tracker_general_color == "#660000" || tracker_general_status == "lost") { // reddark
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.female_reddark;
                     tracker_icon_color = " reddark ";
-                } else if (engineStatus == "0" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // red
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.female_red;
                     tracker_icon_color = "red";
-                } else if (engineStatus == "1" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // green
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // green
+                    resid=R.drawable.female_green;
                     tracker_icon_color = "green";
-                } else if (engineStatus == "0" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // bluelight
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.female_sky;
                     tracker_icon_color = " bluelight ";
-                } else if (engineStatus == "1" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // blue
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.female_blue;
                     tracker_icon_color = "blue";
                 }
             }
         }else if(tracker_icon==4){
             if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
             {
+                resid=R.drawable.bike_grey;
                 tracker_icon_color = "gray";
             }
 
             else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
             {
-
+                resid=R.drawable.bike_pink;
                 tracker_icon_color = "pink";
             }
             else
             {
-                if (tracker_general_color == "#FF6600" || tracker_general_status == "archive") { // orange
-
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.bike_orange;
                     tracker_icon_color = "orange";
-                } else if (tracker_general_color == "#996600" || tracker_general_status == "cancel") { // brown
-
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.bike_brown;
                     tracker_icon_color = "brown";
-                } else if (tracker_general_color == "#FFFF00" || tracker_general_status == "stop") { // yellow
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
 
                     tracker_icon_color = "yellow";
-                } else if (tracker_general_color == "#660000" || tracker_general_status == "lost") { // reddark
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.bike_reddark;
                     tracker_icon_color = " reddark ";
-                } else if (engineStatus == "0" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // red
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900")|| tracker_general_status == "inside")) { // red
                     tracker_icon_color = "red";
-                } else if (engineStatus == "1" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // green
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // green
+                    resid=R.drawable.bike_green;
                     tracker_icon_color = "green";
-                } else if (engineStatus == "0" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // bluelight
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.bike_sky;
                     tracker_icon_color = " bluelight ";
-                } else if (engineStatus == "1" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // blue
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.bike_blue;
                     tracker_icon_color = "blue";
                 }
             }
         }else if(tracker_icon==5){
             if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
             {
+                resid=R.drawable.bus_grey;
                 tracker_icon_color = "gray";
             }
 
             else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
             {
-
+                resid=R.drawable.bus_pink;
                 tracker_icon_color = "pink";
             }
             else
             {
-                if (tracker_general_color == "#FF6600" || tracker_general_status == "archive") { // orange
-
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.bus_orange;
                     tracker_icon_color = "orange";
-                } else if (tracker_general_color == "#996600" || tracker_general_status == "cancel") { // brown
-
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.bus_brown;
                     tracker_icon_color = "brown";
-                } else if (tracker_general_color == "#FFFF00" || tracker_general_status == "stop") { // yellow
-
+                } else if (tracker_general_color.equals("#FFFF00")|| tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.bus_yellow;
                     tracker_icon_color = "yellow";
-                } else if (tracker_general_color == "#660000" || tracker_general_status == "lost") { // reddark
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.bus_reddark;
                     tracker_icon_color = " reddark ";
-                } else if (engineStatus == "0" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // red
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.bus_red;
                     tracker_icon_color = "red";
-                } else if (engineStatus == "1" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // green
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // green
+                    resid=R.drawable.bus_green;
                     tracker_icon_color = "green";
-                } else if (engineStatus == "0" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // bluelight
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.bus_sky;
                     tracker_icon_color = " bluelight ";
-                } else if (engineStatus == "1" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // blue
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.bus_blue;
                     tracker_icon_color = "blue";
                 }
             }
         }else if(tracker_icon==6){
             if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
             {
+                resid=R.drawable.truck_grey;
                 tracker_icon_color = "gray";
             }
 
             else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
             {
-
+                resid=R.drawable.truck_pink;
                 tracker_icon_color = "pink";
             }
             else
             {
-                if (tracker_general_color == "#FF6600" || tracker_general_status == "archive") { // orange
-
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.truck_orange;
                     tracker_icon_color = "orange";
-                } else if (tracker_general_color == "#996600" || tracker_general_status == "cancel") { // brown
-
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.truck_brown;
                     tracker_icon_color = "brown";
-                } else if (tracker_general_color == "#FFFF00" || tracker_general_status == "stop") { // yellow
-
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.truck_yellow;
                     tracker_icon_color = "yellow";
-                } else if (tracker_general_color == "#660000" || tracker_general_status == "lost") { // reddark
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.truck_reddark;
                     tracker_icon_color = " reddark ";
-                } else if (engineStatus == "0" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // red
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.truck_red;
                     tracker_icon_color = "red";
-                } else if (engineStatus == "1" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // green
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // green
+                    resid=R.drawable.truck_green;
                     tracker_icon_color = "green";
-                } else if (engineStatus == "0" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // bluelight
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.truck_sky;
                     tracker_icon_color = " bluelight ";
-                } else if (engineStatus == "1" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // blue
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.truck_blue;
                     tracker_icon_color = "blue";
                 }
             }
         }else if(tracker_icon==7){
             if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
             {
+                resid=R.drawable.road_grey;
                 tracker_icon_color = "gray";
             }
 
             else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
             {
-
+                resid=R.drawable.road_pink;
                 tracker_icon_color = "pink";
             }
             else
             {
-                if (tracker_general_color == "#FF6600" || tracker_general_status == "archive") { // orange
-
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.road_orange;
                     tracker_icon_color = "orange";
-                } else if (tracker_general_color == "#996600" || tracker_general_status == "cancel") { // brown
-
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.road_brown;
                     tracker_icon_color = "brown";
-                } else if (tracker_general_color == "#FFFF00" || tracker_general_status == "stop") { // yellow
-
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.road_yellow;
                     tracker_icon_color = "yellow";
-                } else if (tracker_general_color == "#660000" || tracker_general_status == "lost") { // reddark
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.road_reddark;
                     tracker_icon_color = " reddark ";
-                } else if (engineStatus == "0" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // red
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.road_red;
                     tracker_icon_color = "red";
-                } else if (engineStatus == "1" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // green
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // green
+                    resid=R.drawable.road_green;
                     tracker_icon_color = "green";
-                } else if (engineStatus == "0" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // bluelight
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.road_sky;
                     tracker_icon_color = " bluelight ";
-                } else if (engineStatus == "1" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // blue
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF")|| tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.road_blue;
                     tracker_icon_color = "blue";
                 }
             }
         }else if(tracker_icon==8){
             if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
             {
+                resid=R.drawable.ship_grey;
                 tracker_icon_color = "gray";
             }
 
             else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
             {
-
+                resid=R.drawable.ship_pink;
                 tracker_icon_color = "pink";
             }
             else
             {
-                if (tracker_general_color == "#FF6600" || tracker_general_status == "archive") { // orange
-
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.ship_orange;
                     tracker_icon_color = "orange";
-                } else if (tracker_general_color == "#996600" || tracker_general_status == "cancel") { // brown
-
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.ship_brown;
                     tracker_icon_color = "brown";
-                } else if (tracker_general_color == "#FFFF00" || tracker_general_status == "stop") { // yellow
-
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.ship_yellow;
                     tracker_icon_color = "yellow";
-                } else if (tracker_general_color == "#660000" || tracker_general_status == "lost") { // reddark
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.ship_reddark;
                     tracker_icon_color = " reddark ";
-                } else if (engineStatus == "0" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // red
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.ship_red;
                     tracker_icon_color = "red";
-                } else if (engineStatus == "1" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // green
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // green
+                    resid=R.drawable.ship_green;
                     tracker_icon_color = "green";
-                } else if (engineStatus == "0" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // bluelight
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.ship_sky;
                     tracker_icon_color = " bluelight ";
-                } else if (engineStatus == "1" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // blue
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.ship_blue;
                     tracker_icon_color = "blue";
                 }
             }
         }else if(tracker_icon==9){
             if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
             {
+                resid=R.drawable.train_grey;
                 tracker_icon_color = "gray";
             }
 
             else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
             {
-
+                resid=R.drawable.train_pink;
                 tracker_icon_color = "pink";
             }
             else
             {
-                if (tracker_general_color == "#FF6600" || tracker_general_status == "archive") { // orange
-
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.train_orange;
                     tracker_icon_color = "orange";
-                } else if (tracker_general_color == "#996600" || tracker_general_status == "cancel") { // brown
-
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.train_brown;
                     tracker_icon_color = "brown";
-                } else if (tracker_general_color == "#FFFF00" || tracker_general_status == "stop") { // yellow
-
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.train_yellow;
                     tracker_icon_color = "yellow";
-                } else if (tracker_general_color == "#660000" || tracker_general_status == "lost") { // reddark
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.train_reddark;
                     tracker_icon_color = " reddark ";
-                } else if (engineStatus == "0" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // red
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.train_red;
                     tracker_icon_color = "red";
-                } else if (engineStatus == "1" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // green
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // green
+                    resid=R.drawable.train_green;
                     tracker_icon_color = "green";
-                } else if (engineStatus == "0" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // bluelight
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.train_sky;
                     tracker_icon_color = " bluelight ";
-                } else if (engineStatus == "1" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // blue
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.train_blue;
                     tracker_icon_color = "blue";
                 }
             }
         }else if(tracker_icon==10){
             if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
             {
+                resid=R.drawable.aero_grey;
                 tracker_icon_color = "gray";
             }
 
             else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
             {
-
+                resid=R.drawable.aero_grey;
                 tracker_icon_color = "pink";
             }
             else
             {
-                if (tracker_general_color == "#FF6600" || tracker_general_status == "archive") { // orange
-
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.aero_orange;
                     tracker_icon_color = "orange";
-                } else if (tracker_general_color == "#996600" || tracker_general_status == "cancel") { // brown
-
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.aero_brown;
                     tracker_icon_color = "brown";
-                } else if (tracker_general_color == "#FFFF00" || tracker_general_status == "stop") { // yellow
-
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.aero_yellow;
                     tracker_icon_color = "yellow";
-                } else if (tracker_general_color == "#660000" || tracker_general_status == "lost") { // reddark
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.aero_reddark;
                     tracker_icon_color = " reddark ";
-                } else if (engineStatus == "0" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // red
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.aero_red;
                     tracker_icon_color = "red";
-                } else if (engineStatus == "1" && (tracker_general_color == "#009900" || tracker_general_status == "inside")) { // green
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900")|| tracker_general_status == "inside")) { // green
+                    resid=R.drawable.aero_green;
                     tracker_icon_color = "green";
-                } else if (engineStatus == "0" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // bluelight
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.aero_sky;
                     tracker_icon_color = " bluelight ";
-                } else if (engineStatus == "1" && (tracker_general_color == "#0000FF" || tracker_general_status == "outside")) { // blue
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.aero_blue;
                     tracker_icon_color = "blue";
                 }
             }
         }else if(tracker_icon==11){
+            if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
+            {
+                resid=R.drawable.container_grey;
+                tracker_icon_color = "gray";
+            }
 
+            else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
+            {
+                resid=R.drawable.container_pink;
+                tracker_icon_color = "pink";
+            }
+            else
+            {
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.container_orange;
+                    tracker_icon_color = "orange";
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.container_brown;
+                    tracker_icon_color = "brown";
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.container_yellow;
+                    tracker_icon_color = "yellow";
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.container_reddark;
+                    tracker_icon_color = " reddark ";
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.container_red;
+                    tracker_icon_color = "red";
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900")|| tracker_general_status == "inside")) { // green
+                    resid=R.drawable.container_green;
+                    tracker_icon_color = "green";
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.container_sky;
+                    tracker_icon_color = " bluelight ";
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.container_blue;
+                    tracker_icon_color = "blue";
+                }
+            }
         }else if(tracker_icon==12){
+            if(last_signal_years > 0 || last_signal_months > 0 || last_signal_days > 0 || last_signal_hours >= 10) // gray
+            {
+                resid=R.drawable.auto_grey;
+                tracker_icon_color = "gray";
+            }
 
+            else if(last_gprs_years > 0 || last_gprs_months > 0 || last_gprs_days > 0 || last_gprs_hours >= 10) // pink
+            {
+                resid=R.drawable.auto_pink;
+                tracker_icon_color = "pink";
+            }
+            else
+            {
+                if (tracker_general_color.equals("#FF6600") || tracker_general_status == "archive") { // orange
+                    resid=R.drawable.auto_orange;
+                    tracker_icon_color = "orange";
+                } else if (tracker_general_color.equals("#996600") || tracker_general_status == "cancel") { // brown
+                    resid=R.drawable.auto_brown;
+                    tracker_icon_color = "brown";
+                } else if (tracker_general_color.equals("#FFFF00") || tracker_general_status == "stop") { // yellow
+                    resid=R.drawable.auto_yellow;
+                    tracker_icon_color = "yellow";
+                } else if (tracker_general_color.equals("#660000") || tracker_general_status == "lost") { // reddark
+                    resid=R.drawable.auto_reddark;
+                    tracker_icon_color = " reddark ";
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#009900") || tracker_general_status == "inside")) { // red
+                    resid=R.drawable.auto_red;
+                    tracker_icon_color = "red";
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#009900")|| tracker_general_status == "inside")) { // green
+                    resid=R.drawable.auto_green;
+                    tracker_icon_color = "green";
+                } else if (engineStatus.equals("0") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // bluelight
+                    resid=R.drawable.auto_sky;
+                    tracker_icon_color = " bluelight ";
+                } else if (engineStatus.equals("1") && (tracker_general_color.equals("#0000FF") || tracker_general_status == "outside")) { // blue
+                    resid=R.drawable.auto_blue;
+                    tracker_icon_color = "blue";
+                }
+            }
         }
 
 
@@ -620,6 +773,10 @@ public class map_direction extends AppCompatActivity  {
         // Getting Google Map
         mGoogleMap = fragment.getMap();
         mGoogleMap.getUiSettings().setRotateGesturesEnabled(false);
+        //mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+        mGoogleMap.getUiSettings().setMapToolbarEnabled(true);
+        GoogleMapOptions googleMapOptions=new GoogleMapOptions();
+        googleMapOptions.zoomControlsEnabled(true);
 
         nor.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -638,12 +795,26 @@ public class map_direction extends AppCompatActivity  {
         startProgressDialog("Loading vehicle location"); //first time location load.s
 
         //lets start the service for the first time to get the gps data for the on engine thing blah blah
-        Intent intentLoadLocation = new Intent(this, TrackerLocationLoadService.class);
-        intentLoadLocation.putExtra("action","getlocation");
 
+        //changes by waqar
 
-        intentLoadLocation.putExtra("tracker_id",tracker_id);
-        startService(intentLoadLocation);
+        if(engineStatus.equals("0")){
+            stopProgressDialog();
+            CameraUpdate cmf = CameraUpdateFactory.newLatLngZoom(latLng,18);
+            mGoogleMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .icon(BitmapDescriptorFactory.fromResource(resid))
+                    .title(tData.name));
+            mGoogleMap.animateCamera(cmf);
+
+        }else{
+            Intent intentLoadLocation = new Intent(this, TrackerLocationLoadService.class);
+            intentLoadLocation.putExtra("action","getlocation");
+
+            intentLoadLocation.putExtra("tracker_id",tracker_id);
+            startService(intentLoadLocation);
+
+        }
 
 
         //region broadcast reciever..
@@ -654,24 +825,98 @@ public class map_direction extends AppCompatActivity  {
 
                 stopProgressDialog();
 
-                if(intent.getAction().endsWith(TrackerLocationLoadService.ACTION_Error)) {
-                    Toast.makeText(map_direction.this, "There was error loading location.",Toast.LENGTH_SHORT).show();
+                if (intent.getAction().endsWith(TrackerLocationLoadService.ACTION_Error)) {
+                    Toast.makeText(map_direction.this, "There was error loading location.", Toast.LENGTH_SHORT).show();
 
                     setMapCurrentLocation(latLng);
 
-                }
-                else if (intent.getAction().endsWith(TrackerLocationLoadService.ACTION_Fail)) {
-                    Toast.makeText(map_direction.this, "There was error loading location.",Toast.LENGTH_SHORT).show();
+                } else if (intent.getAction().endsWith(TrackerLocationLoadService.ACTION_Fail)) {
+                    Toast.makeText(map_direction.this, "There was error loading location.", Toast.LENGTH_SHORT).show();
                     setMapCurrentLocation(latLng);
-                }
-                else if (intent.getAction().endsWith(TrackerLocationLoadService.ACTION_Success)){
+                } else if (intent.getAction().endsWith(TrackerLocationLoadService.ACTION_Success)) {
                     //well here we will update the map
                     double[] lat = intent.getDoubleArrayExtra("latitude");
                     double[] lon = intent.getDoubleArrayExtra("longitude");
 
                     //and here we need to update the map
-                    setMapCurrentLocation( new LatLng (lat[0],lon[0] ) );
-                    setMapCurrentRoute(lat,lon);
+
+                    setMapCurrentLocation(new LatLng(lat[0], lon[0]));
+                    setMapCurrentRoute(lat, lon);
+                }
+
+                if(intent.getAction().endsWith(IntentDataLoadService.Action_Fail)) {
+                    //if we are not successful and we have failed..
+
+                }else  if (intent.getAction().endsWith(IntentDataLoadService.Action_TrackerInfo)) {
+                    engineStatus = intent.getStringExtra("engine_status");
+                    latLng = new LatLng(intent.getDoubleExtra("latitude", 0.0), getIntent().getDoubleExtra("longitude", 0.0));
+
+                    if (engineStatus.equals("-1")) {
+                        Toast.makeText(AppManager.getInstance().getCurrentActivity(), "Could not find tracker information.", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        tData = new TrackerData();
+
+                        tData = new TrackerData();
+
+                        tData.name = intent.getStringExtra("name");
+                        tData.device_id = intent.getStringExtra("device_id");
+                        tData.engine_status = intent.getStringExtra("engine_status");
+                        tData.latitude = String.valueOf(String.format("%.5f", intent.getDoubleExtra("latitude", 0.0)));
+                        tData.longitude = String.valueOf(String.format("%.5f", intent.getDoubleExtra("longitude", 0.0)));
+
+                        tData.output_bit = intent.getStringExtra("output_bit");
+                        tData.input_bit_1 = intent.getStringExtra("input_bit_1");
+                        tData.input_bit_2 = intent.getStringExtra("input_bit_2");
+                        tData.input_bit_3 = intent.getStringExtra("input_bit_3");
+                        tData.input_bit_4 = intent.getStringExtra("input_bit_4");
+
+                        tData.username = intent.getStringExtra("username");
+
+                        tData.mileage = intent.getStringExtra("mileage") + unit;
+                        tData.speed = intent.getStringExtra("speed") + unit;
+
+                        tData.last_engine_on = intent.getStringExtra("last_engine_on");
+                        tData.last_engine_off = intent.getStringExtra("last_engine_off");
+                        tData.last_move = intent.getStringExtra("last_move");
+                        tData.last_location = intent.getStringExtra("last_gprs");
+                        tData.last_signal = intent.getStringExtra("last_signal");
+
+                        //Changes by waqar
+                        String gps = intent.getStringExtra("gps");
+                        String gsm = intent.getStringExtra("gsm");
+                        String battery = intent.getStringExtra("battery");
+
+
+                        double gps_level = 0, gsm_level = 0, battery_power = 0;
+                        if (gps.equals("none")) {
+
+                        } else if (gps.equals("a") || gps.equals("b") || gps.equals("c") || gps.equals("d")) {
+                            gps_level = 100.0;
+                        } else if (Integer.parseInt(gps) >= 0 && Integer.parseInt(gps) <= 9) {
+                            gps_level = Integer.parseInt(gps) * 10;
+                        }
+                        if (gsm.equals("none")) {
+
+                        } else if (gsm.equals("a") || gsm.equals("b") || gsm.equals("c") || gsm.equals("d")) {
+                            gsm_level = 100.0;
+                        } else if (Integer.parseInt(gsm) >= 0 && Integer.parseInt(gsm) <= 9) {
+                            gsm_level = Integer.parseInt(gsm) * 10;
+                        }
+                        if (battery.equals("L")) {
+                            battery_power = 9.0;
+                        } else if (battery.equals("F")) {
+                            battery_power = 100.0;
+                        } else if (Double.parseDouble(battery) >= 0 && Double.parseDouble(battery) <= 9.0) {
+                            battery_power = battery_power * 10;
+                        } else if (battery.equals("-")) {
+                            battery_power = 0.0;
+                        }
+
+                        tData.gps = Double.toString(gps_level);
+                        tData.gsm = Double.toString(gsm_level);
+                        tData.battery = Double.toString(battery_power);
+                    }
                 }
             }
         };
@@ -719,8 +964,12 @@ public class map_direction extends AppCompatActivity  {
 
         }
         else {
-            //otherwise run it to get the latest data blah blah blah...
 
+            //otherwise run it to get the latest data blah blah blah...
+            Intent intentTrackerInfo = new Intent(AppManager.getInstance().getCurrentActivity(),IntentDataLoadService.class);
+            intentTrackerInfo.putExtra("action","getTrackerInfo");
+            intentTrackerInfo.putExtra("tracker_id",tracker_id);
+            startService(intentTrackerInfo);
 
         }
 
@@ -733,23 +982,25 @@ public class map_direction extends AppCompatActivity  {
         }
         else {
 
+            Intent intentLoadLocation = new Intent(this, TrackerLocationLoadService.class);
+            intentLoadLocation.putExtra("action","getlocation");
+
+            intentLoadLocation.putExtra("tracker_id",tracker_id);
+            startService(intentLoadLocation);
+
         }
     }
 
     private void setMapCurrentLocation(LatLng latlong) {
 
-
-        //MarkerOptions mo = new MarkerOptions();
-        //mo.position(latlong);
         mGoogleMap.addMarker(new MarkerOptions()
                 .position(latlong)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.parking_icon)));
-        //mGoogleMap.addMarker(mo);
 
     }
 
     private void setMapCurrentRoute(double[] lat, double[] lons) {
-        //float f=SphericalUtil.computeHeading();
+
         int len = lat.length;
 
         PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
@@ -772,8 +1023,8 @@ public class map_direction extends AppCompatActivity  {
                 CameraUpdate cmf = CameraUpdateFactory.newLatLngZoom(new LatLng(lat[z],lons[z]),18);
                 mGoogleMap.addMarker(new MarkerOptions()
                 .position(point)
-                .title(tData.name)
-                .icon(BitmapDescriptorFactory.fromResource(resid)));
+                        .icon(BitmapDescriptorFactory.fromResource(resid))
+                .title(tData.name));
                 mGoogleMap.animateCamera(cmf);
             }
 
@@ -811,6 +1062,13 @@ public class map_direction extends AppCompatActivity  {
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadCastReciever, new IntentFilter(TrackerLocationLoadService.ACTION_Fail));
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadCastReciever, new IntentFilter(TrackerLocationLoadService.ACTION_Success));
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadCastReciever, new IntentFilter(IntentDataLoadService.Action_Error));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadCastReciever, new IntentFilter(IntentDataLoadService.Action_Success));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadCastReciever, new IntentFilter(IntentDataLoadService.Action_Fail));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadCastReciever, new IntentFilter(IntentDataLoadService.Action_TrackerInfo));
+
+
+
     }
 
     @Override
@@ -823,5 +1081,15 @@ public class map_direction extends AppCompatActivity  {
 
     TrackerDetailDialog tddialog;
 
+    @Override
+    protected void onDestroy() {
+        handler.removeCallbacks(mRunnableServerTask);
+        super.onDestroy();
+    }
 
+    @Override
+    public void onBackPressed() {
+        handler.removeCallbacks(mRunnableServerTask);
+        super.onBackPressed();
+    }
 }

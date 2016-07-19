@@ -2,17 +2,22 @@ package app.num.MassUAETracking;
 
 import android.*;
 import android.Manifest;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
@@ -81,6 +86,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         edt_username = (EditText) findViewById(R.id.input_username);
         edt_password = (EditText) findViewById(R.id.input_password);
 
+        edt_username.setTextColor(Color.BLACK);
+        edt_password.setTextColor(Color.BLACK);
+
         txtil_password.setHint("Password");
         txtil_username.setHint("Username");
 
@@ -140,9 +148,32 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 }
                 else if(intent.getAction().endsWith(IntentLoginService.BroadCastFail)) {
 
-               //     Toast.makeText(Login.this,"Wrong username/password",Toast.LENGTH_SHORT).show();
-                    ViewDialog vDialog = new ViewDialog();
-                    vDialog.showDialog(Login.this, "Wrong Username/Password");
+                    //Toast.makeText(Login.this,"Wrong username/password",Toast.LENGTH_SHORT).show();
+                    //ViewDialog vDialog = new ViewDialog();
+                    //vDialog.showDialog(Login.this, "Wrong Username/Password");
+
+                    final AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(Login.this, android.R.style.Theme_Material_Dialog_Alert);
+                    } else {
+                        builder = new AlertDialog.Builder(Login.this);
+                    }
+                    //A lertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    //builder.setTitle("Location Services Not Active");
+                    builder.setMessage("This is an alert dialog");
+                    builder.setTitle("Alert !");
+                    builder.setIcon(android.R.drawable.ic_dialog_alert);
+                    builder.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            // The neutral button was clicked
+                           arg0.dismiss();
+                        }
+                    });
+
+                    Dialog alertDialog = builder.create();
+                    alertDialog.setCanceledOnTouchOutside(false);
+                    alertDialog.show();
+
                 }
 
                 if(progressDialog != null)
@@ -152,6 +183,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         };
 
         btn_login.setOnClickListener(this);
+
 
     }
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -244,7 +276,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             progressDialog = new ProgressDialog(Login.this);
                         }
 
-                        progressDialog.setMessage("logging in.");
+                        progressDialog.setMessage("authenticating.");
                         progressDialog.setCanceledOnTouchOutside(false);
                         progressDialog.setCancelable(false);
                         progressDialog.show();
@@ -255,10 +287,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
                         if(edt_username.getText().toString().equals("")) {
                             txtil_username.setError("Please Enter Username.");
+                            progressDialog.hide();
                         }
                         else if(edt_password.getText().toString().equals("")) {
                             txtil_password.setError("Please Enter Password.");
                             txtil_username.setError("");
+                            progressDialog.hide();
                         }
                         else {
 
@@ -285,7 +319,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                         progressDialog = new ProgressDialog(Login.this);
                     }
 
-                    progressDialog.setMessage("logging in.");
+                    progressDialog.setMessage("authenticating.");
                     progressDialog.setCanceledOnTouchOutside(false);
                     progressDialog.setCancelable(false);
                     progressDialog.show();

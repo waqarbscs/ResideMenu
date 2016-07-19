@@ -36,6 +36,22 @@
     <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/black_overlay</item>
     </style>
-
-
+    <style name="login" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#ff9800</item>
+        <item name="colorPrimaryDark">#303f9f</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="Fragment" parent="Base.Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#ff9800</item>
+        <item name="colorPrimaryDark">#f57c00</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="abc" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#ff9800</item>
+        <item name="colorPrimaryDark">#f57c00</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 </resources>

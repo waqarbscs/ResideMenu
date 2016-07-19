@@ -7,7 +7,7 @@
     <LinearLayout
         android:background="@color/darkOrange"
         android:layout_width="match_parent"
-        android:layout_height="120dp">
+        android:layout_height="60dp">
         <android.support.v4.widget.Space
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -42,7 +42,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="2dp"
             android:text="OK"
-            android:layout_width="50dp"
+            android:layout_width="70dp"
             android:layout_height="wrap_content" />
 
     </RelativeLayout>

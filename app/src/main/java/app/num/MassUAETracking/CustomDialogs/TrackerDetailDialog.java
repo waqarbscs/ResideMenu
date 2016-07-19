@@ -2,11 +2,13 @@ package app.num.MassUAETracking.CustomDialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import app.num.MassUAETracking.Models.TrackerData;
@@ -23,6 +25,7 @@ public class TrackerDetailDialog {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
         dialog.setContentView(R.layout.detail_dialog);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 
 
@@ -80,7 +83,7 @@ public class TrackerDetailDialog {
 
         TextView txt_last_signal = (TextView) dialog.findViewById(R.id.txt_last_signal);
         txt_last_signal.setText(tData.last_signal);
-
+        /*
         TextView txt_gps=(TextView)dialog.findViewById(R.id.txt_gps);
         txt_gps.setText(tData.gps);
 
@@ -88,9 +91,17 @@ public class TrackerDetailDialog {
         TextView txt_gsm=(TextView)dialog.findViewById(R.id.txt_gsm);
         txt_gsm.setText(tData.gsm);
 
-
         TextView txt_battery=(TextView)dialog.findViewById(R.id.txt_battery);
         txt_battery.setText(tData.battery);
+        */
+        ProgressBar pGPS=(ProgressBar)dialog.findViewById(R.id.progressGPS);
+        pGPS.setProgress((int)Double.parseDouble(tData.gps));
+
+        ProgressBar pGSM=(ProgressBar)dialog.findViewById(R.id.progressGSM);
+        pGSM.setProgress((int)Double.parseDouble(tData.gsm));
+
+        ProgressBar pbattery=(ProgressBar)dialog.findViewById(R.id.progressBattery);
+        pbattery.setProgress((int)Double.parseDouble(tData.battery));
 
         Button dialogButton = (Button) dialog.findViewById(R.id.btn_ok);
         dialogButton.setOnClickListener(new View.OnClickListener() {

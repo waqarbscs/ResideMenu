@@ -2,14 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:paddingRight="10dp"
+    android:background="@android:color/transparent"
     android:layout_width="match_parent"
-    android:background="#757575"
+
     android:paddingLeft="10dp"
     android:layout_height="360dp">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <LinearLayout
             android:padding="5dp"
@@ -387,14 +389,23 @@
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-
+                <ProgressBar
+                    android:layout_toRightOf="@+id/gps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/progressGPS"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:indeterminateTint="#e31616"
+                    android:progressDrawable="@drawable/progressbar"
+                    android:minWidth="100dp" />
+                <!--
                 <TextView
                     android:layout_toRightOf="@+id/gps"
                     android:textColor="@color/white"
                     android:id="@+id/txt_gps"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-
+                -->
             </RelativeLayout>
             <RelativeLayout
                 android:layout_marginTop="10dp"
@@ -408,14 +419,23 @@
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-
+                <ProgressBar
+                    android:layout_toRightOf="@+id/gsm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/progressGSM"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:indeterminateTint="#e31616"
+                    android:progressDrawable="@drawable/progressbar"
+                    android:minWidth="100dp" />
+                <!--
                 <TextView
                     android:layout_toRightOf="@+id/gsm"
                     android:textColor="@color/white"
                     android:id="@+id/txt_gsm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-
+                   -->
             </RelativeLayout>
             <RelativeLayout
                 android:layout_marginTop="10dp"
@@ -429,6 +449,16 @@
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+                <ProgressBar
+                    android:layout_toRightOf="@+id/battery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/progressBattery"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:indeterminateTint="#e31616"
+                    android:progressDrawable="@drawable/progressbar"
+                    android:minWidth="100dp" />
+                <!--
 
                 <TextView
                     android:layout_toRightOf="@+id/battery"
@@ -436,6 +466,7 @@
                     android:id="@+id/txt_battery"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+                    -->
 
             </RelativeLayout>
 
@@ -444,17 +475,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-
                 <Button
                     android:textColor="@color/white"
                     android:id="@+id/btn_ok"
                     android:text="Ok"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-
             </RelativeLayout>
-
-
 
         </LinearLayout>
 

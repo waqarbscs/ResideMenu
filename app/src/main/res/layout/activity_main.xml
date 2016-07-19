@@ -4,13 +4,16 @@
     android:background="@android:color/white"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:weightSum="15">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/layout_top">
+        android:layout_height="0dp"
+        android:id="@+id/layout_top"
+        android:layout_weight="2"
+        android:weightSum="1">
 
         <!--<ImageView-->
             <!--android:layout_width="match_parent"-->
@@ -18,13 +21,14 @@
             <!--android:background="#2ea3fe"/>-->
 
         <FrameLayout
-            android:background="#fe9225"
+            android:background="#f4801f"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
             <Button
-                android:layout_width="24dp"
-                android:layout_height="20dp"
+                android:layout_width="36dp"
+                android:layout_height="32dp"
                 android:background="@drawable/titlebar_menu_selector"
                 android:id="@+id/title_bar_left_menu"
                 android:layout_gravity="left|center_vertical"
@@ -37,32 +41,35 @@
                 android:padding="7dp"
                 android:text=""
                 android:textSize="24sp"
-                android:textColor="#fff"
+                android:textColor="#2a0000"
                 android:layout_gravity="center"/>
+
             <TextView
                 android:id="@+id/txt_mana"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="7dp"
-                android:text=""
-                android:textSize="15sp"
-                android:textColor="#fff"
-                android:layout_gravity="right" />
+                android:text="abc"
+                android:textSize="18sp"
+                android:textColor="#0079fe"
+                android:layout_gravity="right|top" />
+
 
         </FrameLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="5dp"
-            android:background="#ebebeb"/>
+            android:background="#ebebeb" />
 
     </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:orientation="vertical"
-        android:id="@+id/main_fragment">
+        android:id="@+id/main_fragment"
+        android:layout_weight="14">
 
     </FrameLayout>
 
